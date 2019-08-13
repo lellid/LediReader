@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29201.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LediReader", "LediReader\LediReader.csproj", "{DAEDD6CD-D387-4636-8B73-CBF6501A2AEB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DAEDD6CD-D387-4636-8B73-CBF6501A2AEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAEDD6CD-D387-4636-8B73-CBF6501A2AEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAEDD6CD-D387-4636-8B73-CBF6501A2AEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAEDD6CD-D387-4636-8B73-CBF6501A2AEB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {223B4383-F62D-40B6-9173-AE1737FC38B9}
+	EndGlobalSection
+EndGlobal
