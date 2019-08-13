@@ -1,0 +1,6 @@
+[submodule "HtmlToXamlConverter"]
+	path = HtmlToXamlConverter
+	url = https://github.com/lellid/HtmlToXamlConverter.git
+[submodule "EpubReader"]
+	path = EpubReader
+	url = https://github.com/vers-one/EpubReader.git
