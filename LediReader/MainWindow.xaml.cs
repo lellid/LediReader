@@ -24,5 +24,15 @@ namespace LediReader
         {
             InitializeComponent();
         }
+
+        private void EhOpenBook(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void EhSettings(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
