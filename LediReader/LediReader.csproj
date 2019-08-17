@@ -6,4 +6,11 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EpubReader\Source\VersOne.Epub\VersOne.Epub.csproj" />
+    <ProjectReference Include="..\HtmlToFlowDocument\HtmlToFlowDocument.Wpf\HtmlToFlowDocument.Wpf.csproj" />
+    <ProjectReference Include="..\HtmlToFlowDocument\HtmlToFlowDocument\HtmlToFlowDocument.csproj" />
+    <ProjectReference Include="..\SlobViewer\SlobDictionary.csproj" />
+  </ItemGroup>
+
 </Project>

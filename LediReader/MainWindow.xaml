@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LediReader"
+        xmlns:slob="clr-namespace:SlobViewer;assembly=SlobDictionary"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
@@ -13,8 +14,15 @@
         </Grid.RowDefinitions>
         <Menu>
             <MenuItem Header="Open Book" Click="EhOpenBook"/>
+            <MenuItem Header="_Dictionary">
+                <MenuItem Header="_Import TEI file" Click="EhImportTeiFile" />
+                <MenuItem Header="_Import TU Chemnitz file" Click="EhImportTUChemnitzFile" />
+                <MenuItem Header="_Open SLOB file" Click="EhOpenSlobFile" />
+                <MenuItem Header="Unload dictionary" x:Name="_guiUnloadMenuItem"/>
+            </MenuItem>
             <MenuItem Header="Settings" Click="EhSettings"/>
         </Menu>
-        <FlowDocumentPageViewer Grid.Row="1" x:Name="_guiViewer"/>
+        <FlowDocumentPageViewer Grid.Row="1" x:Name="_guiViewer" MouseDoubleClick="EhMouseDoubleClick"/>
+        <slob:DictionaryControl Grid.Row="1" x:Name="_guiDictionary" Visibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
 </Window>

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>SlobViewer</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="SharpZipLib" Version="1.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HtmlToFlowDocument\HtmlToFlowDocument\HtmlToFlowDocument.csproj" />
+    <ProjectReference Include="..\HtmlToFlowDocument\HtmlToFlowDocument.Wpf\HtmlToFlowDocument.Wpf.csproj" />
+  </ItemGroup>
+</Project>
