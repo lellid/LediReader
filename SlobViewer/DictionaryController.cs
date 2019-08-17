@@ -56,7 +56,7 @@ namespace SlobViewer
         /// <value>
         /// The keys.
         /// </value>
-        public ObservableCollection<string> Keys
+        public ObservableCollection<string> KeyList
         {
             get
             {
@@ -67,7 +67,31 @@ namespace SlobViewer
                 if (!object.ReferenceEquals(_keys, value))
                 {
                     _keysColl = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Keys)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(KeyList)));
+                }
+            }
+        }
+
+        string _selectedKeyInKeyList;
+
+        /// <summary>
+        /// Gets or sets the selected search text (used for binding to the search text TextBox).
+        /// </summary>
+        /// <value>
+        /// The selected search text.
+        /// </value>
+        public string SelectedKeyInKeyList
+        {
+            get
+            {
+                return _selectedKeyInKeyList;
+            }
+            set
+            {
+                if (!(_selectedKeyInKeyList == value))
+                {
+                    _selectedKeyInKeyList = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedKeyInKeyList)));
                 }
             }
         }
@@ -117,7 +141,7 @@ namespace SlobViewer
             }
         }
 
-        string _selectedSearchText;
+        string _searchText;
 
         /// <summary>
         /// Gets or sets the selected search text (used for binding to the search text TextBox).
@@ -125,18 +149,20 @@ namespace SlobViewer
         /// <value>
         /// The selected search text.
         /// </value>
-        public string SelectedSearchText
+        public string SearchText
         {
             get
             {
-                return _selectedSearchText;
+                return _searchText;
             }
             set
             {
-                if (!(_selectedSearchText == value))
+                if (!(_searchText == value))
                 {
-                    _selectedSearchText = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedSearchText)));
+                    _searchText = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SearchText)));
+                    ShowContentForKey(_searchText);
+                    UpdateBestMatches(_searchText);
                 }
             }
         }
@@ -172,7 +198,7 @@ namespace SlobViewer
         }
 
         /// <summary>
-        /// Collects the keys of all loaded dictionaries and sorts them alphabetically. The list of keys is then published in <see cref="Keys"/>.
+        /// Collects the keys of all loaded dictionaries and sorts them alphabetically. The list of keys is then published in <see cref="KeyList"/>.
         /// </summary>
         public void CollectAndSortKeys()
         {
@@ -190,7 +216,7 @@ namespace SlobViewer
             _sortKeys = _keys.Select(x => _compareInfo.GetSortKey(x)).ToArray();
             Array.Sort(_sortKeys, _keys, new UnicodeStringSorter());
 
-            Keys = new ObservableCollection<string>(_keys);
+            KeyList = new ObservableCollection<string>(_keys);
         }
 
         /// <summary>
@@ -229,7 +255,7 @@ namespace SlobViewer
         /// <param name="untrimmedSearchText">The untrimmed key.</param>
         public void ShowContentForUntrimmedKey(string untrimmedSearchText)
         {
-            SelectedSearchText = untrimmedSearchText.Trim(_wordTrimChars);
+            SearchText = untrimmedSearchText.Trim(_wordTrimChars);
         }
 
         /// <summary>
@@ -239,6 +265,9 @@ namespace SlobViewer
         /// <param name="originalSearchText">The original search text.</param>
         public void ShowContentForKey(string originalSearchText)
         {
+            if (string.IsNullOrEmpty(originalSearchText))
+                return;
+
             (ISlobDictionary Dictionary, string Content, string ContentId, string SearchText)? firstResult = null;
 
             var listDirect = new List<(ISlobDictionary Dictionary, string Content, string ContentId, string SearchText)>();
@@ -276,7 +305,7 @@ namespace SlobViewer
             try
             {
                 ++SearchListLock;
-                SelectedSearchText = searchText;
+                SelectedKeyInKeyList = searchText;
             }
             finally
             {

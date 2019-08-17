@@ -25,7 +25,7 @@
         </Grid.RowDefinitions>
         <Rectangle x:Name="_guiRectangle" Fill="White" Grid.RowSpan="6" Grid.ColumnSpan="3"/>
 
-        <TextBox x:Name="_guiSearchText" Grid.Row="0" Text="{Binding SelectedSearchText, Mode=OneWay}" TextChanged="EhSearchTextChanged"/>
+        <TextBox x:Name="_guiSearchText" Grid.Row="0" Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         <GridSplitter  Grid.Column="1" Grid.RowSpan="6" 
                        HorizontalAlignment="Center"
               VerticalAlignment="Stretch"
@@ -36,8 +36,9 @@
                  VirtualizingStackPanel.VirtualizationMode="Recycling"
                  SelectionMode="Single"
                  SelectionChanged="EhSearchSelectionChanged"
+                 SelectedValue="{Binding SelectedKeyInKeyList, Mode=TwoWay}"
                  MaxHeight="1024"
-                 ItemsSource="{Binding Keys}"
+                 ItemsSource="{Binding KeyList}"
                  >
         </ListBox>
 

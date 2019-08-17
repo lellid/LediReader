@@ -36,14 +36,14 @@ namespace SlobViewer
             this.DataContext = Controller;
         }
 
-
+        /*
         private void EhSearchTextChanged(object sender, TextChangedEventArgs e)
         {
             var searchText = ((TextBox)sender).Text;
             Controller.ShowContentForKey(searchText);
             Controller.UpdateBestMatches(searchText);
         }
-
+        */
 
         private void EhSearchSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -51,10 +51,14 @@ namespace SlobViewer
             {
                 if (e.AddedItems.Count > 0)
                 {
-                    var s = (string)e.AddedItems[0];
+                    var item = e.AddedItems[0];
+                    var s = (string)item;
                     _guiSearchText.Text = s;
                 }
             }
+
+            if (null != _guiSearchList.SelectedItem)
+                _guiSearchList.ScrollIntoView(_guiSearchList.SelectedItem);
         }
 
         private void EhBestMatchSelectionChanged(object sender, SelectionChangedEventArgs e)
