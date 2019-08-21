@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>net471</TargetFramework>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
@@ -11,6 +11,10 @@
     <ProjectReference Include="..\HtmlToFlowDocument\HtmlToFlowDocument.Wpf\HtmlToFlowDocument.Wpf.csproj" />
     <ProjectReference Include="..\HtmlToFlowDocument\HtmlToFlowDocument\HtmlToFlowDocument.csproj" />
     <ProjectReference Include="..\SlobViewer\SlobDictionary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Speech" />
   </ItemGroup>
 
 </Project>

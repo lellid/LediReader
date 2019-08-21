@@ -102,26 +102,15 @@ namespace LediReader
             Dictionary<string, EpubTextContentFile> htmlFiles = _bookContent.Html;
             Dictionary<string, EpubTextContentFile> cssFiles = _bookContent.Css;
 
-            string GetStyleSheet(string name)
+            string GetStyleSheet(string name, string htmlFileNameReferencedFrom)
             {
-                var currName = name;
-                bool namechanged = true;
-                do
-                {
-                    if (cssFiles.TryGetValue(currName, out var cssFile))
-                        return cssFile.Content;
-                    else
-                    {
-                        if (currName.StartsWith("../"))
-                        {
-                            currName = currName.Substring(3);
-                        }
-                        else if (currName.StartsWith("./"))
-                        {
-                            currName = currName.Substring(2);
-                        }
-                    }
-                } while (namechanged);
+                var absoluteName = HtmlToFlowDocument.CssStylesheet.GetAbsoluteCssFileName(name, htmlFileNameReferencedFrom);
+                if (cssFiles.TryGetValue(absoluteName, out var cssFile1))
+                    return cssFile1.Content;
+
+                if (cssFiles.TryGetValue(name, out var cssFile2))
+                    return cssFile2.Content;
+
                 throw new ArgumentException($"CssFile {name} was not found!", nameof(name));
             }
 
@@ -131,7 +120,7 @@ namespace LediReader
             foreach (EpubTextContentFile htmlFile in htmlFiles.Values)
             {
                 string htmlContent = htmlFile.Content;
-                var textElement = converter.Convert(htmlContent, false, GetStyleSheet); // create sections
+                var textElement = converter.Convert(htmlContent, false, GetStyleSheet, htmlFile.FileName); // create sections
                 flowDocument.AppendChild(textElement); // and add them to the flow document
             }
             _settings.BookFileName = fileName;

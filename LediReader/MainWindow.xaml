@@ -21,6 +21,8 @@
                 <MenuItem Header="Unload dictionary" x:Name="_guiUnloadMenuItem"/>
             </MenuItem>
             <MenuItem Header="Settings" Click="EhSettings"/>
+            <MenuItem Header="Play" Click="EhStartSpeech"/>
+            <MenuItem Header="Stop" Click="EhStopSpeech"/>
         </Menu>
         <FlowDocumentPageViewer Grid.Row="1" x:Name="_guiViewer" MouseDoubleClick="EhMouseDoubleClick"/>
         <slob:DictionaryControl Grid.Row="1" x:Name="_guiDictionary" Visibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>

@@ -20,14 +20,17 @@ namespace LediReader
     /// </summary>
     public partial class MainWindow : Window
     {
-        MainWindowController _controller = new MainWindowController();
+        MainWindowController _controller;
+
+        Speech _speech;
 
         public MainWindow()
         {
+            _controller = new MainWindowController();
             InitializeComponent();
             this.DataContext = _controller;
             _controller.LoadSettings(this._guiDictionary.Controller.LoadDictionary);
-
+            _speech = new Speech();
             Loaded += EhLoaded;
         }
 
@@ -88,18 +91,31 @@ namespace LediReader
 
         private void EhMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            _speech.StopSpeech();
             var document = _guiViewer.Document;
-            var screenPoint = PointToScreen(e.GetPosition(this));
-            TextPointer pointer = DocumentExtensions.ScreenPointToTextPointer((FlowDocument)document, screenPoint);
 
-            // new TextRange(document.ContentStart, pointer).ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
-            // new TextRange(pointer, document.ContentEnd).ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            // var screenPoint = PointToScreen(e.GetPosition(this));
+            // TextPointer pointer = DocumentExtensions.ScreenPointToTextPointer((FlowDocument)document, screenPoint);
+
 
             var selection = _guiViewer.Selection;
+            if (!selection.IsEmpty)
+            {
+                ShowDictionaryPage(selection.Text);
+            }
 
 
+        }
 
-            ShowDictionaryPage(selection.Text);
+        private void EhStartSpeech(object sender, RoutedEventArgs e)
+        {
+            if (!_guiViewer.Selection.IsEmpty && _guiViewer.Selection.Start.Parent is TextElement te)
+                _speech.StartSpeech(te);
+        }
+
+        private void EhStopSpeech(object sender, RoutedEventArgs e)
+        {
+            _speech.StopSpeech();
         }
 
         private void ShowDictionaryPage(string phrase)

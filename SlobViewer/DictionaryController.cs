@@ -423,7 +423,7 @@ namespace SlobViewer
         /// <returns>A <see cref="Section"/> that represents the HTML content.</returns>
         public Section ConvertHtmlContentToSection(ISlobDictionary dictionary, string htmlContent)
         {
-            Func<string, string> cssStyleSheetProvider = (cssFileName) =>
+            Func<string, string, string> cssStyleSheetProvider = (cssFileName, refFileName) =>
             {
                 if (dictionary.TryGetValue(cssFileName, out var entry))
                 {
@@ -437,7 +437,7 @@ namespace SlobViewer
 
             try
             {
-                var section = (Section)_converter.Convert(htmlContent, false, cssStyleSheetProvider);
+                var section = (Section)_converter.Convert(htmlContent, false, cssStyleSheetProvider, null);
                 return section;
             }
             catch (Exception ex)
