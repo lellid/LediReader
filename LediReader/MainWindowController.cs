@@ -8,17 +8,17 @@ namespace LediReader
 {
     public class MainWindowController
     {
-        Settings _settings;
+        public Settings Settings { get; private set; }
 
         public EpubContent _bookContent;
 
         public MainWindowController()
         {
             _imageProvider = new ImageSource(this);
-            _settings = new Settings();
+            Settings = new Settings();
         }
 
-        public void LoadSettings(Action<string, bool> LoadDictionary)
+        public void LoadSettings()
         {
             // Load the settings
 
@@ -26,35 +26,23 @@ namespace LediReader
             appPath = System.IO.Path.Combine(appPath, "LediReader");
             var appSettingsFileName = System.IO.Path.Combine(appPath, "Settings.xml");
 
-            try
+
+            using (var str = new FileStream(appSettingsFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                using (var str = new FileStream(appSettingsFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                var xmlSettings = new System.Xml.XmlReaderSettings() { CloseInput = true, IgnoreWhitespace = true };
+                using (var tr = System.Xml.XmlReader.Create(str, xmlSettings))
                 {
-                    var xmlSettings = new System.Xml.XmlReaderSettings() { CloseInput = true, IgnoreWhitespace = true };
-                    using (var tr = System.Xml.XmlReader.Create(str, xmlSettings))
-                    {
-                        tr.MoveToContent();
-                        _settings.LoadXml(tr);
-                    }
+                    tr.MoveToContent();
+                    Settings.LoadXml(tr);
                 }
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            if (_settings.DictionaryFileNames.Count >= 1)
-            {
-                for (int i = _settings.DictionaryFileNames.Count - 1; i >= 0; --i)
-                    LoadDictionary(_settings.DictionaryFileNames[i], i == 0);
             }
         }
 
         public void UpdateDictionaryFileNames(IEnumerable<string> dictionaryFileNames)
         {
             // Update dictionaries currently in use
-            _settings.DictionaryFileNames.Clear();
-            _settings.DictionaryFileNames.AddRange(dictionaryFileNames);
+            Settings.DictionarySettings.DictionaryFileNames.Clear();
+            Settings.DictionarySettings.DictionaryFileNames.AddRange(dictionaryFileNames);
         }
 
         public void SaveSettings()
@@ -75,7 +63,7 @@ namespace LediReader
                     var xmlSettings = new System.Xml.XmlWriterSettings() { CloseOutput = true, Indent = true };
                     using (var tw = System.Xml.XmlWriter.Create(str, xmlSettings))
                     {
-                        _settings.SaveXml(tw);
+                        Settings.SaveXml(tw);
                     }
                 }
             }
@@ -87,10 +75,12 @@ namespace LediReader
 
         public HtmlToFlowDocument.Dom.FlowDocument ReopenEbook()
         {
-            if (!string.IsNullOrEmpty(_settings.BookFileName))
-                return OpenEbook(_settings.BookFileName);
-            else
+            if (string.IsNullOrEmpty(Settings.BookSettings.BookFileName))
                 return null;
+
+            var document = OpenEbook(Settings.BookSettings.BookFileName);
+
+            return document;
         }
 
         public HtmlToFlowDocument.Dom.FlowDocument OpenEbook(string fileName)
@@ -104,14 +94,28 @@ namespace LediReader
 
             string GetStyleSheet(string name, string htmlFileNameReferencedFrom)
             {
+                EpubTextContentFile cssFile;
+                // calculate absolute name with reference to htmlFileNameReferencedFrom
                 var absoluteName = HtmlToFlowDocument.CssStylesheet.GetAbsoluteCssFileName(name, htmlFileNameReferencedFrom);
-                if (cssFiles.TryGetValue(absoluteName, out var cssFile1))
-                    return cssFile1.Content;
+                if (cssFiles.TryGetValue(absoluteName, out cssFile))
+                    return cssFile.Content;
 
-                if (cssFiles.TryGetValue(name, out var cssFile2))
-                    return cssFile2.Content;
+                // if this could not resolve the name, then try to go to parent directories
+                while (htmlFileNameReferencedFrom.Contains("/"))
+                {
+                    var idx = htmlFileNameReferencedFrom.LastIndexOf("/");
+                    htmlFileNameReferencedFrom = htmlFileNameReferencedFrom.Substring(0, idx - 1);
+                    absoluteName = HtmlToFlowDocument.CssStylesheet.GetAbsoluteCssFileName(name, htmlFileNameReferencedFrom);
+                    if (cssFiles.TryGetValue(absoluteName, out cssFile))
+                        return cssFile.Content;
+                }
 
-                throw new ArgumentException($"CssFile {name} was not found!", nameof(name));
+                // if this was not successful, then try it with the name alone
+                if (cssFiles.TryGetValue(name, out cssFile))
+                    return cssFile.Content;
+
+                return null;
+                // throw new ArgumentException($"CssFile {name} was not found!", nameof(name));
             }
 
             // Entire HTML content of the book
@@ -123,7 +127,7 @@ namespace LediReader
                 var textElement = converter.Convert(htmlContent, false, GetStyleSheet, htmlFile.FileName); // create sections
                 flowDocument.AppendChild(textElement); // and add them to the flow document
             }
-            _settings.BookFileName = fileName;
+            Settings.BookSettings.BookFileName = fileName;
             return flowDocument;
         }
 

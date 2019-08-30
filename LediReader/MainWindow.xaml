@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:LediReader"
         xmlns:slob="clr-namespace:SlobViewer;assembly=SlobDictionary"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="LediReader" 
+        Height="450" Width="800"
+        >
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -23,8 +25,10 @@
             <MenuItem Header="Settings" Click="EhSettings"/>
             <MenuItem Header="Play" Click="EhStartSpeech"/>
             <MenuItem Header="Stop" Click="EhStopSpeech"/>
+            <MenuItem Header="GotoPage" Click="EhGotoPage"/>
         </Menu>
-        <FlowDocumentPageViewer Grid.Row="1" x:Name="_guiViewer" MouseDoubleClick="EhMouseDoubleClick"/>
+        <Rectangle x:Name="_guiViewerBackground" Grid.Row="1" PreviewMouseDown="EhPreviewMouseDown" Fill="White"/>
+        <FlowDocumentPageViewer Grid.Row="1" x:Name="_guiViewer" PreviewMouseDown="EhPreviewMouseDown" MouseDoubleClick="EhMouseDoubleClick" Margin="32,0,32,0"/>
         <slob:DictionaryControl Grid.Row="1" x:Name="_guiDictionary" Visibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
 </Window>

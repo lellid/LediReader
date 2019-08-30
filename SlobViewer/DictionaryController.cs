@@ -1,4 +1,6 @@
-﻿using HtmlToFlowDocument.Dom;
+﻿// Copyright (c) Dr. Dirk Lellinger. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using HtmlToFlowDocument.Dom;
 using SlobViewer.Common;
 using SlobViewer.Slob;
 using System;
@@ -177,6 +179,15 @@ namespace SlobViewer
         /// </value>
         public IList<ISlobDictionary> Dictionaries { get { return _dictionaries; } }
 
+
+        public void LoadDictionariesUsingSettings(Settings settings)
+        {
+            if (settings.DictionaryFileNames.Count >= 1)
+            {
+                for (int i = settings.DictionaryFileNames.Count - 1; i >= 0; --i)
+                    LoadDictionary(settings.DictionaryFileNames[i], i == 0);
+            }
+        }
 
         /// <summary>
         /// Loads a Slob dictionary.
