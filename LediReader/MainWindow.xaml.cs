@@ -219,6 +219,10 @@ namespace LediReader
                 _guiViewer.Selection.Select(_guiViewer.Selection.Start, _guiViewer.Selection.Start);
                 _speech.StartSpeech(te1);
             }
+            else if (null != _lastTextElementConsidered)
+            {
+                _speech.StartSpeech(_lastTextElementConsidered);
+            }
             else if (_guiViewer.Selection.IsEmpty)
             {
                 var te2 = GetTextElementAtStartOfCurrentPage();
@@ -245,6 +249,7 @@ namespace LediReader
         {
             if (null != lastSpokenElement)
             {
+                _lastTextElementConsidered = lastSpokenElement;
                 _guiViewer.Selection.Select(lastSpokenElement.ContentStart, lastSpokenElement.ContentEnd);
             }
         }
@@ -283,6 +288,8 @@ namespace LediReader
 
         private void EhGotoPage(object sender, RoutedEventArgs e)
         {
+            _speech.StopSpeech();
+
             var control = new Gui.GoToPageControl();
             control.Controller.MaxPageNumber = _guiViewer.PageCount;
             control.Controller.PageNumber = _guiViewer.MasterPageNumber;
