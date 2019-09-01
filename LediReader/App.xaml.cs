@@ -15,5 +15,11 @@ namespace LediReader
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            Gui.StartupSettings.StartupArguments = e.Args;
+            base.OnStartup(e);
+        }
+
     }
 }

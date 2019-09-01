@@ -23,24 +23,24 @@ namespace LediReader.Gui
 
         }
 
-        SpeechSynthesizer _synthesizer;
+        Speech.SpeechWorker _speechWorker;
 
-        public SpeechSynthesizer Synthesizer
+        public Speech.SpeechWorker Synthesizer
         {
             set
             {
                 if (null != value)
                 {
-                    _synthesizer = value;
-                    foreach (InstalledVoice voice in _synthesizer.GetInstalledVoices())
+                    _speechWorker = value;
+                    foreach (InstalledVoice voice in _speechWorker.GetInstalledVoices())
                     {
                         _voices.Add(voice.VoiceInfo);
                     }
                 }
 
-                SelectedVoice = _synthesizer.Voice;
-                SpeakingRate = _synthesizer.Rate;
-                SpeakingVolume = _synthesizer.Volume;
+                SelectedVoice = _speechWorker.SpeechVoiceInfo;
+                SpeakingRate = _speechWorker.SpeechRate;
+                SpeakingVolume = _speechWorker.SpeechVolume;
             }
         }
 
@@ -64,8 +64,8 @@ namespace LediReader.Gui
                 if (_selectedVoice != oldValue)
                 {
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedVoice)));
-                    if (null != _synthesizer && _selectedVoice != null)
-                        _synthesizer.SelectVoice(_selectedVoice.Name);
+                    if (null != _speechWorker && _selectedVoice != null)
+                        _speechWorker.SpeechVoice = _selectedVoice.Name;
                 }
             }
         }
@@ -85,9 +85,9 @@ namespace LediReader.Gui
                 if (_speakingRate != oldValue)
                 {
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SpeakingRate)));
-                    if (null != _synthesizer)
+                    if (null != _speechWorker)
                     {
-                        _synthesizer.Rate = _speakingRate;
+                        _speechWorker.SpeechRate = _speakingRate;
                     }
                 }
             }
@@ -108,9 +108,9 @@ namespace LediReader.Gui
                 if (_speakingVolume != oldValue)
                 {
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SpeakingVolume)));
-                    if (null != _synthesizer)
+                    if (null != _speechWorker)
                     {
-                        _synthesizer.Volume = _speakingVolume;
+                        _speechWorker.SpeechVolume = _speakingVolume;
                     }
                 }
 

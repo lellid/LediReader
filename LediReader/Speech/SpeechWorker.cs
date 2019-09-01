@@ -20,6 +20,13 @@ namespace LediReader.Speech
         int _textOffsetInPrompt;
         FlowDocument _flowDocument;
         TextElement _lastSpokenElement;
+
+        int _speechRate = 0;
+
+        int _speechVolume = 100;
+
+        string _speechVoice;
+
         bool _isEmphasisEnabled;
 
         int _workingBackgroundBlackTheme;
@@ -38,22 +45,57 @@ namespace LediReader.Speech
 
         public SpeechWorker()
         {
-            _synthesizer = new SpeechSynthesizer();
-            _synthesizer.SpeakProgress += EhSpeakProgress;
-            _synthesizer.SpeakCompleted += EhSpeakCompleted;
-            _synthesizer.SetOutputToDefaultAudioDevice();
-
 
         }
 
+        public void AttachSynthesizer()
+        {
+            if (null == _synthesizer)
+            {
+                _synthesizer = new SpeechSynthesizer();
+                _synthesizer.SpeakProgress += EhSpeakProgress;
+                _synthesizer.SpeakCompleted += EhSpeakCompleted;
+                _synthesizer.SetOutputToDefaultAudioDevice();
+
+                _synthesizer.Rate = _speechRate;
+                _synthesizer.Volume = _speechVolume;
+                if (!string.IsNullOrEmpty(_speechVoice))
+                {
+                    _synthesizer.SelectVoice(_speechVoice);
+                }
+            }
+        }
+
+        public void DetachSynthesizer()
+        {
+            if (null != _synthesizer)
+            {
+                _synthesizer.SpeakCompleted -= EhSpeakCompleted;
+                _synthesizer.SpeakProgress -= EhSpeakProgress;
+                _synthesizer.Dispose();
+                _synthesizer = null;
+            }
+        }
+
+
+
         public void ApplySettings(SpeechSettings s)
         {
-            if (!string.IsNullOrEmpty(s.SpeechVoice))
+            _speechVoice = s.SpeechVoice;
+            _speechRate = s.SpeechRate;
+            _speechVolume = s.SpeechVolume;
+            _isEmphasisEnabled = s.IsEmphasisEnabled;
+
+            if (null != _synthesizer)
             {
-                _synthesizer.SelectVoice(s.SpeechVoice);
+                _synthesizer.Rate = _speechRate;
+                _synthesizer.Volume = _speechVolume;
+                if (!string.IsNullOrEmpty(_speechVoice))
+                {
+                    _synthesizer.SelectVoice(_speechVoice);
+                }
             }
-            _synthesizer.Rate = s.SpeechRate;
-            _synthesizer.Volume = s.SpeechVolume;
+
             _isEmphasisEnabled = s.IsEmphasisEnabled;
             _workingBackgroundBlackTheme = s.WorkingBackgroundBlackTheme;
             _workingBackgroundLightTheme = s.WorkingBackgroundLightTheme;
@@ -64,9 +106,9 @@ namespace LediReader.Speech
 
         public void GetSettings(SpeechSettings s)
         {
-            s.SpeechVoice = _synthesizer.Voice.Name;
-            s.SpeechRate = _synthesizer.Rate;
-            s.SpeechVolume = _synthesizer.Volume;
+            s.SpeechVoice = _speechVoice;
+            s.SpeechRate = _speechRate;
+            s.SpeechVolume = _speechVolume;
             s.IsEmphasisEnabled = _isEmphasisEnabled;
         }
 
@@ -104,15 +146,84 @@ namespace LediReader.Speech
 
         public TextElement LastSpokenElement => _lastSpokenElement;
 
-        public bool IsSpeechSynthesizingActive => _synthesizer.State != SynthesizerState.Ready;
+        public bool IsSpeechSynthesizingActive => null != _synthesizer && _synthesizer.State != SynthesizerState.Ready;
 
         static (byte r, byte g, byte b) RGBFromInt(int i)
         {
             return ((byte)((i & 0xFF0000) >> 16), (byte)((i & 0x00FF00) >> 8), (byte)((i & 0x0000FF)));
         }
 
+        public int SpeechRate
+        {
+            get
+            {
+                return _speechRate;
+            }
+            set
+            {
+                if (!(_speechRate == value))
+                {
+                    _speechRate = value;
+                    if (null != _synthesizer)
+                    {
+                        _synthesizer.Rate = _speechRate;
+                    }
+                }
+            }
+        }
 
-        public SpeechSynthesizer Synthesizer => _synthesizer;
+        public int SpeechVolume
+        {
+            get
+            {
+                return _speechVolume;
+            }
+            set
+            {
+                if (!(_speechVolume == value))
+                {
+                    _speechVolume = value;
+                    if (null != _synthesizer)
+                    {
+                        _synthesizer.Volume = _speechVolume;
+                    }
+                }
+            }
+        }
+
+        public string SpeechVoice
+        {
+            get
+            {
+                return _speechVoice;
+            }
+            set
+            {
+                if (!(_speechVoice == value))
+                {
+                    _speechVoice = value;
+                    if (null != _synthesizer)
+                    {
+                        _synthesizer.SelectVoice(_speechVoice);
+                    }
+                }
+            }
+        }
+
+        public VoiceInfo SpeechVoiceInfo
+        {
+            get
+            {
+                AttachSynthesizer();
+                return _synthesizer.Voice;
+            }
+        }
+
+        public IEnumerable<InstalledVoice> GetInstalledVoices()
+        {
+            AttachSynthesizer();
+            return _synthesizer.GetInstalledVoices();
+        }
 
 
         private FlowDocument GetParentDocument(TextElement te)
@@ -130,6 +241,11 @@ namespace LediReader.Speech
 
         public void StartSpeech(TextElement te)
         {
+            if (null == _synthesizer)
+            {
+                AttachSynthesizer();
+            }
+
             InternalStartSpeech(te);
         }
 
@@ -144,9 +260,10 @@ namespace LediReader.Speech
             _synthesizer.SpeakAsync(pb);
         }
 
-        public void StopSpeech()
+        public TextElement StopSpeech()
         {
             _synthesizer.SpeakAsyncCancelAll();
+            return _lastSpokenElement;
         }
 
         private void EhSpeakProgress(object sender, SpeakProgressEventArgs e)
@@ -173,9 +290,6 @@ namespace LediReader.Speech
             if (null != textEle)
             {
                 _lastSpokenElement = textEle;
-
-                // var textPointer = textEle.ContentStart;
-                // textPointer = textPointer.GetPositionAtOffset(e.CharacterPosition-textPos);
                 textEle.BringIntoView();
 
             }

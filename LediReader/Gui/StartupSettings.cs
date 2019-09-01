@@ -9,6 +9,8 @@ namespace LediReader.Gui
 {
     public class StartupSettings
     {
+        public static string[] StartupArguments;
+
         public double Left { get; set; }
 
         public double Top { get; set; }
