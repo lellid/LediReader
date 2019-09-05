@@ -148,7 +148,7 @@ namespace LediReader
 
             if (null == _lastTextElementConsidered)
             {
-                _lastTextElementConsidered = GetTextElementAtViewerPosition(new Point(0, 0));
+                _lastTextElementConsidered = _guiViewer.GetTextElementAtViewerPosition(new Point(0, 0));
             }
 
             if (null != _lastTextElementConsidered)
@@ -206,7 +206,9 @@ namespace LediReader
                 var flowDocumentE = renderer.Render(flowDocument);
 
                 flowDocumentE.IsColumnWidthFlexible = false;
-                flowDocumentE.ColumnWidth = _guiViewer.ActualWidth;
+
+                var binding = new Binding("ActualWidth") { Source = _guiViewer };
+                flowDocumentE.SetBinding(FlowDocument.ColumnWidthProperty, binding); // Make sure the ColumnWidth property is same as the actual width of the flow document
                 _guiViewer.Document = flowDocumentE;
             }
             else
@@ -219,17 +221,7 @@ namespace LediReader
 
 
 
-        private TextElement GetTextElementAtViewerPosition(Point viewerPosition)
-        {
-            var screenPoint = _guiViewer.PointToScreen(viewerPosition);
-            TextPointer pointer = DocumentExtensions.ScreenPointToTextPointer((FlowDocument)_guiViewer.Document, screenPoint);
-            if (null != pointer && pointer.Parent is TextElement te)
-                return te;
-            else if (null != pointer && pointer.Parent is FlowDocument doc)
-                return doc.Blocks.FirstBlock;
-            else
-                return null;
-        }
+
 
 
 
@@ -421,7 +413,7 @@ namespace LediReader
             }
             else if (_guiViewer.Selection.IsEmpty)
             {
-                var te2 = GetTextElementAtViewerPosition(new Point(0, 0));
+                var te2 = _guiViewer.GetTextElementAtViewerPosition(new Point(0, 0));
                 if (null != te2)
                 {
                     _speech.StartSpeech(te2);
@@ -493,7 +485,8 @@ namespace LediReader
             {
                 if (_speech.IsSpeechSynthesizingActive)
                 {
-                    var te = GetTextElementAtViewerPosition(e.GetPosition(_guiViewer));
+                    var pt = e.GetPosition(_guiViewer);
+                    var te = _guiViewer.GetTextElementAtViewerPosition(pt);
                     if (te is Run run)
                     {
                         _speech.StopSpeech();
@@ -503,6 +496,8 @@ namespace LediReader
                 }
             }
         }
+
+
 
 
 

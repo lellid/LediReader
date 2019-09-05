@@ -262,7 +262,7 @@ namespace LediReader.Speech
 
         public TextElement StopSpeech()
         {
-            _synthesizer.SpeakAsyncCancelAll();
+            _synthesizer?.SpeakAsyncCancelAll();
             return _lastSpokenElement;
         }
 
