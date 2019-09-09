@@ -90,18 +90,19 @@ namespace LediReader
             _guiDictionary.Controller.LoadDictionariesUsingSettings(_controller.Settings.DictionarySettings);
 
             HtmlToFlowDocument.Dom.FlowDocument document = null;
+            Dictionary<string, string> fontDictionary = null;
             if (null != Gui.StartupSettings.StartupArguments && Gui.StartupSettings.StartupArguments.Length > 0)
             {
-                document = _controller.OpenEbook(Gui.StartupSettings.StartupArguments[0]);
+                (document, fontDictionary) = _controller.OpenEbook(Gui.StartupSettings.StartupArguments[0]);
             }
             else
             {
-                document = _controller.ReopenEbook();
+                (document, fontDictionary) = _controller.ReopenEbook();
             }
 
 
             _guiViewer.Zoom = _controller.Settings.BookSettings.Zoom;
-            ShowFlowDocument(document);
+            ShowFlowDocument(document, fontDictionary);
             SlobViewer.GuiActions.UpdateUnloadSubmenus(_guiDictionary.Controller, _guiUnloadMenuItem);
 
             bool navigated = false;
@@ -200,11 +201,11 @@ namespace LediReader
         #endregion Startup and Closing
 
 
-        private void ShowFlowDocument(HtmlToFlowDocument.Dom.FlowDocument flowDocument)
+        private void ShowFlowDocument(HtmlToFlowDocument.Dom.FlowDocument flowDocument, Dictionary<string, string> fontDictionary)
         {
             if (null != flowDocument)
             {
-                var renderer = new HtmlToFlowDocument.Rendering.WpfRenderer() { InvertColors = false, AttachDomAsTags = true };
+                var renderer = new HtmlToFlowDocument.Rendering.WpfRenderer() { InvertColors = false, AttachDomAsTags = true, FontDictionary = fontDictionary };
                 var flowDocumentE = renderer.Render(flowDocument);
 
                 flowDocumentE.IsColumnWidthFlexible = false;
@@ -245,8 +246,8 @@ namespace LediReader
 
             if (true == dlg.ShowDialog(this))
             {
-                var flowDocument = _controller.OpenEbook(dlg.FileName);
-                ShowFlowDocument(flowDocument);
+                var (flowDocument, fontDictionary) = _controller.OpenEbook(dlg.FileName);
+                ShowFlowDocument(flowDocument, fontDictionary);
             }
         }
 

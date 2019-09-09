@@ -12,10 +12,14 @@ namespace LediReader
 
         public EpubContent _bookContent;
 
+        InstanceStorageService _instanceStorageService;
+
         public MainWindowController()
         {
+            _instanceStorageService = new InstanceStorageService();
             _imageProvider = new ImageSource(this);
             Settings = new Settings();
+
         }
 
         public void LoadSettings()
@@ -73,17 +77,17 @@ namespace LediReader
             }
         }
 
-        public HtmlToFlowDocument.Dom.FlowDocument ReopenEbook()
+        public (HtmlToFlowDocument.Dom.FlowDocument Document, Dictionary<string, string> FontDictionary) ReopenEbook()
         {
             if (string.IsNullOrEmpty(Settings.BookSettings.BookFileName))
-                return null;
+                return (null, null);
 
             var document = OpenEbook(Settings.BookSettings.BookFileName);
 
             return document;
         }
 
-        public HtmlToFlowDocument.Dom.FlowDocument OpenEbook(string fileName)
+        public (HtmlToFlowDocument.Dom.FlowDocument Document, Dictionary<string, string> FontDictionary) OpenEbook(string fileName)
         {
 
             var epubBook = EpubReader.ReadBook(fileName);
@@ -91,6 +95,27 @@ namespace LediReader
 
             Dictionary<string, EpubTextContentFile> htmlFiles = _bookContent.Html;
             Dictionary<string, EpubTextContentFile> cssFiles = _bookContent.Css;
+
+            // ----------------- handle fonts ------------------------------
+            var fontDictionary = new Dictionary<string, string>(); // Key is the font name, value is the absolute path to the font file
+            var fontPath = Path.Combine(_instanceStorageService.InstanceStoragePath, "Fonts");
+            Directory.CreateDirectory(fontPath);
+
+            foreach (var entry in _bookContent.Fonts)
+            {
+                var fontName = entry.Key;
+                var bytes = entry.Value;
+                var fontFileName = Path.GetFileName(entry.Value.FileName);
+                fontFileName = Path.Combine(fontPath, fontFileName);
+                using (var stream = new FileStream(fontFileName, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    var byteArray = bytes.Content;
+                    stream.Write(byteArray, 0, byteArray.Length);
+                }
+                fontDictionary.Add(fontName, fontFileName);
+            }
+
+            // -------------------------------------------------------------
 
             string GetStyleSheet(string name, string htmlFileNameReferencedFrom)
             {
@@ -128,7 +153,7 @@ namespace LediReader
                 flowDocument.AppendChild(textElement); // and add them to the flow document
             }
             Settings.BookSettings.BookFileName = fileName;
-            return flowDocument;
+            return (flowDocument, fontDictionary);
         }
 
         #region Image provider
