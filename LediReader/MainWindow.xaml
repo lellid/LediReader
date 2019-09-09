@@ -31,7 +31,9 @@
         <FlowDocumentPageViewer Grid.Row="1" x:Name="_guiViewer" 
                                 Margin="32,0,32,0"
                                 PreviewMouseDown="EhViewerMargin_PreviewMouseDown" 
-                                MouseDoubleClick="EhViewer_MouseDoubleClick" />
+                                MouseDoubleClick="EhViewer_MouseDoubleClick" >
+            <FlowDocument></FlowDocument>
+        </FlowDocumentPageViewer>
         <slob:DictionaryControl Grid.Row="1" x:Name="_guiDictionary" Visibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
 </Window>

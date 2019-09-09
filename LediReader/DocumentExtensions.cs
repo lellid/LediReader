@@ -12,10 +12,24 @@ namespace LediReader
     {
         public static TextElement GetTextElementAtViewerPosition(this FlowDocumentPageViewer viewer, Point viewerPosition)
         {
-            var scale = VisualTreeHelper.GetDpi(viewer);
-            var viewerPositionScaled = new Point(viewerPosition.X / scale.DpiScaleX, viewerPosition.Y / scale.DpiScaleY);
-            var screenPoint = viewer.PointToScreen(viewerPositionScaled);
-            return GetTextElementAtScreenPosition((FlowDocument)viewer.Document, screenPoint);
+            var mainWindow = App.Current.MainWindow;
+            var mainWindowPosition = viewer.TranslatePoint(viewerPosition, mainWindow); // to main windows coordinates
+            return GetTextElementAtMainWindowPosition(mainWindow, (FlowDocument)viewer.Document, mainWindowPosition);
+        }
+
+        /// <summary>
+        /// Gets the text element at the main window position.
+        /// </summary>
+        /// <param name="window">The main window.</param>
+        /// <param name="flowDocument">The flow document.</param>
+        /// <param name="windowPosition">The position into the main window, e.g. get by mouse events like <c>e.GetPosition(mainWindow)</c>.</param>
+        /// <returns>The text element under this position</returns>
+        public static TextElement GetTextElementAtMainWindowPosition(this Window window, FlowDocument flowDocument, Point windowPosition)
+        {
+            var scale = VisualTreeHelper.GetDpi(window);
+            var windowPositionScaled = new Point(windowPosition.X / scale.DpiScaleX, windowPosition.Y / scale.DpiScaleY);
+            var screenPoint = window.PointToScreen(windowPositionScaled);
+            return GetTextElementAtScreenPosition(flowDocument, screenPoint);
         }
 
         public static TextElement GetTextElementAtScreenPosition(this FlowDocument flowDocument, Point screenPoint)

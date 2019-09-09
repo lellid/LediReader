@@ -178,6 +178,8 @@ namespace LediReader
             base.OnClosing(e);
         }
 
+        protected FlowDocument FlowDocument => _guiViewer.Document as FlowDocument;
+
         private void EhPowerModeChanged(object sender, PowerModeChangedEventArgs e)
         {
             switch (e.Mode)
@@ -485,8 +487,7 @@ namespace LediReader
             {
                 if (_speech.IsSpeechSynthesizingActive)
                 {
-                    var pt = e.GetPosition(_guiViewer);
-                    var te = _guiViewer.GetTextElementAtViewerPosition(pt);
+                    var te = _guiViewer.GetTextElementAtViewerPosition(e.GetPosition(_guiViewer));
                     if (te is Run run)
                     {
                         _speech.StopSpeech();
