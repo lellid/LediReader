@@ -25,6 +25,8 @@
             <MenuItem Header="_Settings">
                 <MenuItem Header="Settings" Click="EhSettings"/>
                 <MenuItem Header="Appearance" Click="EhBookSettings"/>
+                <MenuItem Header="Register with .epub extension" Click="EhRegisterApplication"/>
+                <MenuItem Header="Unregister with .epub extension" Click="EhUnregisterApplication"/>
             </MenuItem>
             <MenuItem Header="Play" Click="EhStartSpeech"/>
             <MenuItem Header="Stop" Click="EhStopSpeech"/>

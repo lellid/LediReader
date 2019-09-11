@@ -131,8 +131,6 @@ namespace LediReader
             }
         }
 
-
-
         protected override void OnClosing(CancelEventArgs e)
         {
             // Update file paths
@@ -542,6 +540,16 @@ namespace LediReader
         {
             _guiViewer.Margin = new Thickness(settings.LeftAndRightMargin, 0, settings.LeftAndRightMargin, 0);
             UseDarkTheme = settings.BlackTheme;
+        }
+
+        private void EhRegisterApplication(object sender, RoutedEventArgs e)
+        {
+            Registration.AppRegistration.RegisterApplication();
+        }
+
+        private void EhUnregisterApplication(object sender, RoutedEventArgs e)
+        {
+            Registration.AppRegistration.UnregisterApplication();
         }
 
 
