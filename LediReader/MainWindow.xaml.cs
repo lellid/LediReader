@@ -45,6 +45,8 @@ namespace LediReader
         /// </summary>
         bool _isInState_ShowingTheDictionary;
 
+        bool _useDarkTheme;
+
         #region Startup and Closing
 
         public MainWindow()
@@ -75,6 +77,9 @@ namespace LediReader
             }
 
             InitializeComponent();
+
+            ApplyDarkTheme(_controller.Settings.BookSettings.BlackTheme, reRenderBook: false);
+
             this.DataContext = _controller;
             Loaded += EhLoaded;
         }
@@ -205,7 +210,7 @@ namespace LediReader
         {
             if (null != flowDocument)
             {
-                var renderer = new HtmlToFlowDocument.Rendering.WpfRenderer() { InvertColors = false, AttachDomAsTags = true, FontDictionary = fontDictionary };
+                var renderer = new HtmlToFlowDocument.Rendering.WpfRenderer() { InvertColors = UseDarkTheme, AttachDomAsTags = true, FontDictionary = fontDictionary };
                 var flowDocumentE = renderer.Render(flowDocument);
 
                 flowDocumentE.IsColumnWidthFlexible = false;
@@ -221,18 +226,39 @@ namespace LediReader
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
         #region Gui event handlers
+
+        public bool UseDarkTheme
+        {
+            get
+            {
+                return _useDarkTheme;
+            }
+            set
+            {
+                if (!(_useDarkTheme == value))
+                {
+                    ApplyDarkTheme(value, reRenderBook: true);
+                }
+            }
+        }
+
+        private void ApplyDarkTheme(bool useDarkTheme, bool reRenderBook)
+        {
+            _useDarkTheme = useDarkTheme;
+            _guiViewerBackground.Fill = _useDarkTheme ? Brushes.Black : Brushes.White;
+            this.Background = _useDarkTheme ? Brushes.Black : Brushes.White;
+            this.Foreground = _useDarkTheme ? Brushes.White : Brushes.Black;
+            _guiMainMenu.Background = _useDarkTheme ? Brushes.Black : Brushes.White;
+            _guiMainMenu.Foreground = _useDarkTheme ? Brushes.White : Brushes.Black;
+
+            if (reRenderBook)
+            {
+                var (doc, fontDictionary) = _controller.ReopenEbook();
+                ShowFlowDocument(doc, fontDictionary);
+            }
+        }
+
 
         private void EhOpenBook(object sender, RoutedEventArgs e)
         {
@@ -497,6 +523,25 @@ namespace LediReader
                     }
                 }
             }
+        }
+
+        private void EhBookSettings(object sender, RoutedEventArgs e)
+        {
+            var control = new Gui.BookSettingsControl();
+            var controller = control.Controller;
+            controller.Initialize(this._controller.Settings.BookSettings);
+            var dlg = new Gui.DialogShellViewWpf(control);
+            if (true == dlg.ShowDialog())
+            {
+                controller.Apply(this._controller.Settings.BookSettings);
+                ApplyBookSettings(this._controller.Settings.BookSettings);
+            }
+        }
+
+        private void ApplyBookSettings(Book.BookSettings settings)
+        {
+            _guiViewer.Margin = new Thickness(settings.LeftAndRightMargin, 0, settings.LeftAndRightMargin, 0);
+            UseDarkTheme = settings.BlackTheme;
         }
 
 

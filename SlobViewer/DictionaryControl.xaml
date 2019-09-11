@@ -61,6 +61,6 @@
 
         -->
 
-        <Button Grid.Row="7" Grid.Column="2" Content="Hide" Click="EhHide"/>
+        <Button x:Name="_guiHideButton" Grid.Row="7" Grid.Column="2" Content="Hide" Click="EhHide" Visibility="Collapsed"/>
     </Grid>
 </UserControl>

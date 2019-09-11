@@ -266,6 +266,16 @@ namespace LediReader.Speech
             return _lastSpokenElement;
         }
 
+        TextElement GetTextElementToMark(TextElement te)
+        {
+            var result = te;
+            while (result.Parent is Span span)
+            {
+                result = span;
+            }
+            return result.Parent is TextElement resultTe ? resultTe : result;
+        }
+
         private void EhSpeakProgress(object sender, SpeakProgressEventArgs e)
         {
             if (_textOffsetInPrompt < 0)
@@ -279,7 +289,7 @@ namespace LediReader.Speech
                 _lastMarkedTextElementOriginalBackground = null;
             }
 
-            _lastMarkedTextElement = textEle.Parent is Span span ? span : textEle;
+            _lastMarkedTextElement = GetTextElementToMark(textEle);
 
             if (null != _lastMarkedTextElement)
             {

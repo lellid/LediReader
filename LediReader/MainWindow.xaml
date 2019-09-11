@@ -14,7 +14,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Menu>
+        <Menu x:Name="_guiMainMenu">
             <MenuItem Header="Open Book" Click="EhOpenBook"/>
             <MenuItem Header="_Dictionary">
                 <MenuItem Header="_Import TEI file" Click="EhImportTeiFile" />
@@ -22,7 +22,10 @@
                 <MenuItem Header="_Open SLOB file" Click="EhOpenSlobFile" />
                 <MenuItem Header="Unload dictionary" x:Name="_guiUnloadMenuItem"/>
             </MenuItem>
-            <MenuItem Header="Settings" Click="EhSettings"/>
+            <MenuItem Header="_Settings">
+                <MenuItem Header="Settings" Click="EhSettings"/>
+                <MenuItem Header="Appearance" Click="EhBookSettings"/>
+            </MenuItem>
             <MenuItem Header="Play" Click="EhStartSpeech"/>
             <MenuItem Header="Stop" Click="EhStopSpeech"/>
             <MenuItem Header="GotoPage" Click="EhGotoPage"/>
