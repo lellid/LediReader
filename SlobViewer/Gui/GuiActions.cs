@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace SlobViewer
+namespace SlobViewer.Gui
 {
     /// <summary>
     /// User controlled actions for SlobViewer.

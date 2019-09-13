@@ -17,7 +17,7 @@ namespace LediReader.Speech
 
         public bool IsEmphasisEnabled { get; set; }
 
-        public int WorkingBackgroundBlackTheme { get; set; } = 0x101010;
+        public int WorkingBackgroundBlackTheme { get; set; } = 0x444444;
 
         public int WorkingBackgroundLightTheme { get; set; } = 0xEFEFEF;
 

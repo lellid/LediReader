@@ -86,7 +86,7 @@ namespace LediReader
 
         private void EhLoaded(object sender, RoutedEventArgs e)
         {
-            _speech = new SpeechWorker();
+            _speech = new SpeechWorker() { DarkTheme = _useDarkTheme };
             _speech.ApplySettings(_controller.Settings.SpeechSettings);
             _speech.SpeechCompleted += EhSpeechCompleted;
 
@@ -108,7 +108,7 @@ namespace LediReader
 
             _guiViewer.Zoom = _controller.Settings.BookSettings.Zoom;
             ShowFlowDocument(document, fontDictionary);
-            SlobViewer.GuiActions.UpdateUnloadSubmenus(_guiDictionary.Controller, _guiUnloadMenuItem);
+            SlobViewer.Gui.GuiActions.UpdateUnloadSubmenus(_guiDictionary.Controller, _guiUnloadMenuItem);
 
             bool navigated = false;
             if (_controller.Settings.BookSettings.Bookmark != null)
@@ -244,16 +244,40 @@ namespace LediReader
         private void ApplyDarkTheme(bool useDarkTheme, bool reRenderBook)
         {
             _useDarkTheme = useDarkTheme;
-            _guiViewerBackground.Fill = _useDarkTheme ? Brushes.Black : Brushes.White;
-            this.Background = _useDarkTheme ? Brushes.Black : Brushes.White;
-            this.Foreground = _useDarkTheme ? Brushes.White : Brushes.Black;
-            _guiMainMenu.Background = _useDarkTheme ? Brushes.Black : Brushes.White;
-            _guiMainMenu.Foreground = _useDarkTheme ? Brushes.White : Brushes.Black;
+
+            _controller.Settings.BookSettings.BlackTheme = _useDarkTheme;
+            _controller.Settings.DictionarySettings.BlackTheme = _useDarkTheme;
+
+            if (null != _speech)
+                _speech.DarkTheme = _useDarkTheme;
+            //           this.Background = _useDarkTheme ? Brushes.Black : Brushes.White;
+            //         this.Foreground = _useDarkTheme ? Brushes.White : Brushes.Black;
+            //       _guiMainMenu.Background = _useDarkTheme ? Brushes.Black : Brushes.White;
+            //     _guiMainMenu.Foreground = _useDarkTheme ? Brushes.White : Brushes.Black;
+
+            if (_useDarkTheme)
+                AppThemeSelector.ApplyTheme(new[] { new Uri("pack://application:,,,/Themes/StylesDark.xaml") });
+            else
+                AppThemeSelector.ApplyTheme(new[] { new Uri("pack://application:,,,/Themes/StylesLight.xaml") });
 
             if (reRenderBook)
             {
                 var (doc, fontDictionary) = _controller.ReopenEbook();
                 ShowFlowDocument(doc, fontDictionary);
+
+                /*
+            if (_guiViewer.Document is FlowDocument doc)
+            {
+                _guiViewer.Document = null;
+                var colorInverter = new HtmlToFlowDocument.Rendering.FlowDocumentColorInverter();
+                colorInverter.InvertColorsRecursively(doc);
+                doc.Foreground = _useDarkTheme ? Brushes.White : Brushes.Black;
+                _guiViewer.Document = doc;
+            }
+                */
+
+
+
             }
         }
 
@@ -305,20 +329,20 @@ namespace LediReader
 
         private void EhImportTeiFile(object sender, RoutedEventArgs e)
         {
-            SlobViewer.GuiActions.ImportTeiFile(_guiDictionary.Controller, this);
-            SlobViewer.GuiActions.UpdateUnloadSubmenus(_guiDictionary.Controller, _guiUnloadMenuItem);
+            SlobViewer.Gui.GuiActions.ImportTeiFile(_guiDictionary.Controller, this);
+            SlobViewer.Gui.GuiActions.UpdateUnloadSubmenus(_guiDictionary.Controller, _guiUnloadMenuItem);
         }
 
         private void EhImportTUChemnitzFile(object sender, RoutedEventArgs e)
         {
-            SlobViewer.GuiActions.ImportTUChemnitzFile(_guiDictionary.Controller, this);
-            SlobViewer.GuiActions.UpdateUnloadSubmenus(_guiDictionary.Controller, _guiUnloadMenuItem);
+            SlobViewer.Gui.GuiActions.ImportTUChemnitzFile(_guiDictionary.Controller, this);
+            SlobViewer.Gui.GuiActions.UpdateUnloadSubmenus(_guiDictionary.Controller, _guiUnloadMenuItem);
         }
 
         private void EhOpenSlobFile(object sender, RoutedEventArgs e)
         {
-            SlobViewer.GuiActions.OpenSlobFile(_guiDictionary.Controller, this);
-            SlobViewer.GuiActions.UpdateUnloadSubmenus(_guiDictionary.Controller, _guiUnloadMenuItem);
+            SlobViewer.Gui.GuiActions.OpenSlobFile(_guiDictionary.Controller, this);
+            SlobViewer.Gui.GuiActions.UpdateUnloadSubmenus(_guiDictionary.Controller, _guiUnloadMenuItem);
         }
 
         private void EhGotoPage(object sender, RoutedEventArgs e)
@@ -482,6 +506,7 @@ namespace LediReader
                 _isInState_ShowingTheDictionary = true;
                 _guiDictionary.Visibility = Visibility.Visible;
                 _guiDictionary.Margin = new Thickness(0, 0, _guiViewer.Margin.Right, 0);
+                _guiDictionary.Controller.IsInDarkMode = _useDarkTheme;
                 _guiDictionary.Controller.ShowContentForUntrimmedKey(phrase);
             }
         }

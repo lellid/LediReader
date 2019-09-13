@@ -22,7 +22,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SlobViewer
+namespace SlobViewer.Gui
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

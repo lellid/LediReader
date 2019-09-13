@@ -1,0 +1,18 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ledi="clr-namespace:LediReader.Gui">
+
+    <Color x:Key="WindowBackgroundColorWhite">#FFFFFF</Color>
+
+    <SolidColorBrush x:Key="WindowBackgroundBrushWhite" Color="{StaticResource WindowBackgroundColorWhite}"/>
+
+    <Style TargetType="{x:Type ledi:BackgroundRectangle}" xmlns:ledi="clr-namespace:LediReader.Gui">
+        <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}"/>
+    </Style>
+
+    <Style TargetType="{x:Type slob:BackgroundRectangle}" xmlns:slob="clr-namespace:SlobViewer.Gui;assembly=SlobDictionary">
+        <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}"/>
+    </Style>
+
+
+</ResourceDictionary>

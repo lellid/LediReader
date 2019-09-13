@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SlobViewer
+namespace SlobViewer.Gui
 {
     /// <summary>
     /// ViewModel for the <see cref="DictionaryControl"/>.
@@ -169,6 +169,24 @@ namespace SlobViewer
             }
         }
 
+        bool _isInDarkMode;
+
+        public bool IsInDarkMode
+        {
+            get
+            {
+                return _isInDarkMode;
+            }
+            set
+            {
+                if (!(_isInDarkMode == value))
+                {
+                    _isInDarkMode = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsInDarkMode)));
+                }
+            }
+        }
+
         #endregion
 
         /// <summary>
@@ -264,6 +282,7 @@ namespace SlobViewer
         /// collects the content found for this key, and finally shows the collected content in a FlowDocument.
         /// </summary>
         /// <param name="untrimmedSearchText">The untrimmed key.</param>
+        /// <param name="isInDarkMode">If true, the colors of the document are inverted.</param>
         public void ShowContentForUntrimmedKey(string untrimmedSearchText)
         {
             SearchText = untrimmedSearchText.Trim(_wordTrimChars);

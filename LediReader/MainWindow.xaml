@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LediReader"
-        xmlns:slob="clr-namespace:SlobViewer;assembly=SlobDictionary"
+        xmlns:ledi="clr-namespace:LediReader.Gui"
+        xmlns:slob="clr-namespace:SlobViewer.Gui;assembly=SlobDictionary"
         mc:Ignorable="d"
         Title="LediReader" 
         Height="450" Width="800"
@@ -32,7 +33,7 @@
             <MenuItem Header="Stop" Click="EhStopSpeech"/>
             <MenuItem Header="GotoPage" Click="EhGotoPage"/>
         </Menu>
-        <Rectangle x:Name="_guiViewerBackground" Grid.Row="1"  Fill="White" PreviewMouseDown="EhViewerMargin_PreviewMouseDown"/>
+        <ledi:BackgroundRectangle x:Name="_guiViewerBackground" Grid.Row="1" PreviewMouseDown="EhViewerMargin_PreviewMouseDown"/>
         <FlowDocumentPageViewer Grid.Row="1" x:Name="_guiViewer" 
                                 Margin="32,0,32,0"
                                 PreviewMouseDown="EhViewerMargin_PreviewMouseDown" 
