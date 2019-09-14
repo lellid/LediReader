@@ -97,8 +97,8 @@ namespace LediReader.Speech
             }
 
             _isEmphasisEnabled = s.IsEmphasisEnabled;
-            _workingBackgroundBlackTheme = s.WorkingBackgroundBlackTheme;
-            _workingBackgroundLightTheme = s.WorkingBackgroundLightTheme;
+            _workingBackgroundBlackTheme = s.WorkingBackgroundColorDarkMode;
+            _workingBackgroundLightTheme = s.WorkingBackgroundColorLightMode;
 
             _isDarkThemeActivated = !_isDarkThemeActivated; // trick here
             DarkTheme = !_isDarkThemeActivated; // to force calculation of colors

@@ -53,13 +53,13 @@ namespace LediReader.Gui
 
         public void Initialize(BookSettings bookSettings)
         {
-            UseDarkTheme = bookSettings.BlackTheme;
+            UseDarkTheme = bookSettings.IsInDarkMode;
             LeftAndRightMargin = bookSettings.LeftAndRightMargin;
         }
 
         public void Apply(BookSettings bookSettings)
         {
-            bookSettings.BlackTheme = UseDarkTheme;
+            bookSettings.IsInDarkMode = UseDarkTheme;
             bookSettings.LeftAndRightMargin = LeftAndRightMargin;
         }
 

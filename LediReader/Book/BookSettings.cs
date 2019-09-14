@@ -31,7 +31,7 @@ namespace LediReader.Book
         /// <value>
         ///   <c>true</c> if UI has a black theme; otherwise, <c>false</c>.
         /// </value>
-        public bool BlackTheme { get; set; }
+        public bool IsInDarkMode { get; set; }
 
         public double LeftAndRightMargin { get; set; } = 32;
 
@@ -60,7 +60,7 @@ namespace LediReader.Book
 
                 tw.WriteElementString("Zoom", XmlConvert.ToString(Zoom));
 
-                tw.WriteElementString("BlackTheme", XmlConvert.ToString(BlackTheme));
+                tw.WriteElementString("BlackTheme", XmlConvert.ToString(IsInDarkMode));
 
                 tw.WriteElementString("LeftAndRightMargin", XmlConvert.ToString(LeftAndRightMargin));
             }
@@ -79,7 +79,7 @@ namespace LediReader.Book
             PageNumber = tr.ReadElementContentAsInt("PageNumber", string.Empty);
             Bookmark = tr.ReadElementContentAsString("Bookmark", string.Empty);
             Zoom = tr.ReadElementContentAsDouble("Zoom", string.Empty);
-            BlackTheme = tr.ReadElementContentAsBoolean("BlackTheme", string.Empty);
+            IsInDarkMode = tr.ReadElementContentAsBoolean("BlackTheme", string.Empty);
             LeftAndRightMargin = tr.ReadElementContentAsDouble("LeftAndRightMargin", string.Empty);
 
             tr.ReadEndElement(); // BookSettings

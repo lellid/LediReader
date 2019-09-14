@@ -41,7 +41,7 @@ namespace SlobViewer.Slob
         {
             ReadCompressedContentFromStream(stream, buffer);
 
-            StoreCompressedContentForDebugging();
+            // StoreCompressedContentForDebugging();
 
             if (null != _compressedContent)
             {

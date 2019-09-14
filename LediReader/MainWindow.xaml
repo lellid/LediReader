@@ -24,8 +24,8 @@
                 <MenuItem Header="Unload dictionary" x:Name="_guiUnloadMenuItem"/>
             </MenuItem>
             <MenuItem Header="_Settings">
-                <MenuItem Header="Settings" Click="EhSettings"/>
-                <MenuItem Header="Appearance" Click="EhBookSettings"/>
+                <MenuItem Header="Speech.." Click="EhSpeechSettings"/>
+                <MenuItem Header="Appearance.." Click="EhBookSettings"/>
                 <MenuItem Header="Register with .epub extension" Click="EhRegisterApplication"/>
                 <MenuItem Header="Unregister with .epub extension" Click="EhUnregisterApplication"/>
             </MenuItem>

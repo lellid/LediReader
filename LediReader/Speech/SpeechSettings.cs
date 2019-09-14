@@ -17,9 +17,9 @@ namespace LediReader.Speech
 
         public bool IsEmphasisEnabled { get; set; }
 
-        public int WorkingBackgroundBlackTheme { get; set; } = 0x444444;
+        public int WorkingBackgroundColorDarkMode { get; set; } = 0x202020;
 
-        public int WorkingBackgroundLightTheme { get; set; } = 0xEFEFEF;
+        public int WorkingBackgroundColorLightMode { get; set; } = 0xEFEFEF;
 
 
         public SpeechSettings()
@@ -40,8 +40,8 @@ namespace LediReader.Speech
                 tw.WriteElementString("SpeechRate", XmlConvert.ToString(SpeechRate));
                 tw.WriteElementString("SpeechVolume", XmlConvert.ToString(SpeechVolume));
                 tw.WriteElementString("IsEmphasisEnabled", XmlConvert.ToString(IsEmphasisEnabled));
-                tw.WriteElementString("WorkingBackgroundBlackTheme", XmlConvert.ToString(WorkingBackgroundBlackTheme));
-                tw.WriteElementString("WorkingBackgroundLightTheme", XmlConvert.ToString(WorkingBackgroundLightTheme));
+                tw.WriteElementString("WorkingBackgroundBlackTheme", XmlConvert.ToString(WorkingBackgroundColorDarkMode));
+                tw.WriteElementString("WorkingBackgroundLightTheme", XmlConvert.ToString(WorkingBackgroundColorLightMode));
             }
 
             tw.WriteEndElement(); // SpeechSettings
@@ -56,8 +56,8 @@ namespace LediReader.Speech
             SpeechRate = tr.ReadElementContentAsInt("SpeechRate", string.Empty);
             SpeechVolume = tr.ReadElementContentAsInt("SpeechVolume", string.Empty);
             IsEmphasisEnabled = tr.ReadElementContentAsBoolean("IsEmphasisEnabled", string.Empty);
-            WorkingBackgroundBlackTheme = tr.ReadElementContentAsInt("WorkingBackgroundBlackTheme", string.Empty);
-            WorkingBackgroundLightTheme = tr.ReadElementContentAsInt("WorkingBackgroundLightTheme", string.Empty);
+            WorkingBackgroundColorDarkMode = tr.ReadElementContentAsInt("WorkingBackgroundBlackTheme", string.Empty);
+            WorkingBackgroundColorLightMode = tr.ReadElementContentAsInt("WorkingBackgroundLightTheme", string.Empty);
         }
     }
 

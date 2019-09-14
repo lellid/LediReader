@@ -13,7 +13,7 @@ namespace SlobViewer
     {
         public List<string> DictionaryFileNames { get; private set; }
 
-        public bool BlackTheme { get; set; }
+        public bool IsInDarkMode { get; set; }
 
         public Settings()
         {
@@ -44,7 +44,7 @@ namespace SlobViewer
                 }
                 tw.WriteEndElement();//Dictionaries
 
-                tw.WriteElementString("BlackTheme", XmlConvert.ToString(BlackTheme));
+                tw.WriteElementString("BlackTheme", XmlConvert.ToString(IsInDarkMode));
             }
 
             tw.WriteEndElement(); // DictionarySettings
@@ -74,7 +74,7 @@ namespace SlobViewer
                 if (dictCount > 0)
                     tr.ReadEndElement(); // Dictionaries
 
-                BlackTheme = tr.ReadElementContentAsBoolean("BlackTheme", string.Empty);
+                IsInDarkMode = tr.ReadElementContentAsBoolean("BlackTheme", string.Empty);
             }
             tr.ReadEndElement(); // DictionarySettings
 

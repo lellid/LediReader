@@ -45,7 +45,7 @@ namespace LediReader
         /// </summary>
         bool _isInState_ShowingTheDictionary;
 
-        bool _useDarkTheme;
+        bool _isInDarkMode;
 
         #region Startup and Closing
 
@@ -78,7 +78,7 @@ namespace LediReader
 
             InitializeComponent();
 
-            ApplyDarkTheme(_controller.Settings.BookSettings.BlackTheme, reRenderBook: false);
+            ApplyDarkTheme(_controller.Settings.BookSettings.IsInDarkMode, reRenderBook: false);
 
             this.DataContext = _controller;
             Loaded += EhLoaded;
@@ -86,7 +86,7 @@ namespace LediReader
 
         private void EhLoaded(object sender, RoutedEventArgs e)
         {
-            _speech = new SpeechWorker() { DarkTheme = _useDarkTheme };
+            _speech = new SpeechWorker() { DarkTheme = _isInDarkMode };
             _speech.ApplySettings(_controller.Settings.SpeechSettings);
             _speech.SpeechCompleted += EhSpeechCompleted;
 
@@ -230,11 +230,11 @@ namespace LediReader
         {
             get
             {
-                return _useDarkTheme;
+                return _isInDarkMode;
             }
             set
             {
-                if (!(_useDarkTheme == value))
+                if (!(_isInDarkMode == value))
                 {
                     ApplyDarkTheme(value, reRenderBook: true);
                 }
@@ -243,19 +243,15 @@ namespace LediReader
 
         private void ApplyDarkTheme(bool useDarkTheme, bool reRenderBook)
         {
-            _useDarkTheme = useDarkTheme;
+            _isInDarkMode = useDarkTheme;
 
-            _controller.Settings.BookSettings.BlackTheme = _useDarkTheme;
-            _controller.Settings.DictionarySettings.BlackTheme = _useDarkTheme;
+            _controller.Settings.BookSettings.IsInDarkMode = _isInDarkMode;
+            _controller.Settings.DictionarySettings.IsInDarkMode = _isInDarkMode;
 
             if (null != _speech)
-                _speech.DarkTheme = _useDarkTheme;
-            //           this.Background = _useDarkTheme ? Brushes.Black : Brushes.White;
-            //         this.Foreground = _useDarkTheme ? Brushes.White : Brushes.Black;
-            //       _guiMainMenu.Background = _useDarkTheme ? Brushes.Black : Brushes.White;
-            //     _guiMainMenu.Foreground = _useDarkTheme ? Brushes.White : Brushes.Black;
+                _speech.DarkTheme = _isInDarkMode;
 
-            if (_useDarkTheme)
+            if (_isInDarkMode)
                 AppThemeSelector.ApplyTheme(new[] { new Uri("pack://application:,,,/Themes/StylesDark.xaml") });
             else
                 AppThemeSelector.ApplyTheme(new[] { new Uri("pack://application:,,,/Themes/StylesLight.xaml") });
@@ -299,15 +295,21 @@ namespace LediReader
             }
         }
 
-        private void EhSettings(object sender, RoutedEventArgs e)
+        private void EhSpeechSettings(object sender, RoutedEventArgs e)
         {
-            var controller = new Gui.SpeechSettingsController() { Synthesizer = _speech };
+            var controller = new Gui.SpeechSettingsController();
+            controller.Initialize(_controller.Settings.SpeechSettings);
+            controller.Synthesizer = _speech;
             var control = new Gui.SpeechSettingsControl(controller);
 
 
-            var window = new Window();
-            window.Content = control;
-            window.Show();
+            var window = new Gui.DialogShellViewWpf(control);
+
+            if (true == window.ShowDialog())
+            {
+                controller.Apply(_controller.Settings.SpeechSettings);
+                _speech.ApplySettings(_controller.Settings.SpeechSettings);
+            }
         }
 
 
@@ -506,7 +508,7 @@ namespace LediReader
                 _isInState_ShowingTheDictionary = true;
                 _guiDictionary.Visibility = Visibility.Visible;
                 _guiDictionary.Margin = new Thickness(0, 0, _guiViewer.Margin.Right, 0);
-                _guiDictionary.Controller.IsInDarkMode = _useDarkTheme;
+                _guiDictionary.Controller.IsInDarkMode = _isInDarkMode;
                 _guiDictionary.Controller.ShowContentForUntrimmedKey(phrase);
             }
         }
@@ -564,7 +566,7 @@ namespace LediReader
         private void ApplyBookSettings(Book.BookSettings settings)
         {
             _guiViewer.Margin = new Thickness(settings.LeftAndRightMargin, 0, settings.LeftAndRightMargin, 0);
-            UseDarkTheme = settings.BlackTheme;
+            UseDarkTheme = settings.IsInDarkMode;
         }
 
         private void EhRegisterApplication(object sender, RoutedEventArgs e)
