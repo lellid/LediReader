@@ -25,6 +25,7 @@ namespace LediReader.Speech
 
         int _speechVolume = 100;
 
+        string _speechCulture;
         string _speechVoice;
 
         bool _isEmphasisEnabled;
@@ -32,7 +33,7 @@ namespace LediReader.Speech
         uint _workingBackgroundBlackTheme;
         uint _workingBackgroundLightTheme;
 
-        bool _isDarkThemeActivated;
+        bool _isInDarkMode;
 
         System.Windows.Media.Brush _documentBackBrushNormal = System.Windows.Media.Brushes.White;
         System.Windows.Media.Brush _documentBackBrushInPlay = System.Windows.Media.Brushes.LightGray;
@@ -81,6 +82,7 @@ namespace LediReader.Speech
 
         public void ApplySettings(SpeechSettings s)
         {
+            _speechCulture = s.SpeechCulture ?? "en-US";
             _speechVoice = s.SpeechVoice;
             _speechRate = s.SpeechRate;
             _speechVolume = s.SpeechVolume;
@@ -100,31 +102,32 @@ namespace LediReader.Speech
             _workingBackgroundBlackTheme = s.WorkingBackgroundColorDarkMode;
             _workingBackgroundLightTheme = s.WorkingBackgroundColorLightMode;
 
-            _isDarkThemeActivated = !_isDarkThemeActivated; // trick here
-            DarkTheme = !_isDarkThemeActivated; // to force calculation of colors
+            _isInDarkMode = !_isInDarkMode; // trick here
+            IsInDarkMode = !_isInDarkMode; // to force calculation of colors
         }
 
         public void GetSettings(SpeechSettings s)
         {
+            s.SpeechCulture = _speechCulture;
             s.SpeechVoice = _speechVoice;
             s.SpeechRate = _speechRate;
             s.SpeechVolume = _speechVolume;
             s.IsEmphasisEnabled = _isEmphasisEnabled;
         }
 
-        public bool DarkTheme
+        public bool IsInDarkMode
         {
             get
             {
-                return _isDarkThemeActivated;
+                return _isInDarkMode;
             }
             set
             {
-                if (!(_isDarkThemeActivated == value))
+                if (!(_isInDarkMode == value))
                 {
-                    _isDarkThemeActivated = value;
+                    _isInDarkMode = value;
 
-                    if (_isDarkThemeActivated)
+                    if (_isInDarkMode)
                     {
                         _documentBackBrushNormal = System.Windows.Media.Brushes.Black;
                         _spanBackBrushInPlay = System.Windows.Media.Brushes.Black;

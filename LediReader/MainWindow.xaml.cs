@@ -86,7 +86,7 @@ namespace LediReader
 
         private void EhLoaded(object sender, RoutedEventArgs e)
         {
-            _speech = new SpeechWorker() { DarkTheme = _isInDarkMode };
+            _speech = new SpeechWorker() { IsInDarkMode = _isInDarkMode };
             _speech.ApplySettings(_controller.Settings.SpeechSettings);
             _speech.SpeechCompleted += EhSpeechCompleted;
 
@@ -249,7 +249,7 @@ namespace LediReader
             _controller.Settings.DictionarySettings.IsInDarkMode = _isInDarkMode;
 
             if (null != _speech)
-                _speech.DarkTheme = _isInDarkMode;
+                _speech.IsInDarkMode = _isInDarkMode;
 
             if (_isInDarkMode)
                 AppThemeSelector.ApplyTheme(new[] { new Uri("pack://application:,,,/Themes/StylesDark.xaml") });
