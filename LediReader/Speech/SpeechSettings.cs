@@ -50,7 +50,7 @@ namespace LediReader.Speech
             tw.WriteStartElement("SpeechSettings");
             tw.WriteAttributeString("Version", "1");
             {
-                tw.WriteElementString("SpeechCulture", SpeechVoice);
+                tw.WriteElementString("SpeechCulture", SpeechCulture);
                 tw.WriteElementString("SpeechVoice", SpeechVoice);
                 tw.WriteElementString("SpeechRate", XmlConvert.ToString(SpeechRate));
                 tw.WriteElementString("SpeechVolume", XmlConvert.ToString(SpeechVolume));

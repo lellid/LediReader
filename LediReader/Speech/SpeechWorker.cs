@@ -25,7 +25,7 @@ namespace LediReader.Speech
 
         int _speechVolume = 100;
 
-        string _speechCulture;
+        string _speechCulture = "en-US";
         string _speechVoice;
 
         bool _isEmphasisEnabled;
@@ -53,28 +53,39 @@ namespace LediReader.Speech
         {
             if (null == _synthesizer)
             {
-                _synthesizer = new SpeechSynthesizer();
-                _synthesizer.SpeakProgress += EhSpeakProgress;
-                _synthesizer.SpeakCompleted += EhSpeakCompleted;
-                _synthesizer.SetOutputToDefaultAudioDevice();
+                var synthesizer = new SpeechSynthesizer();
+                synthesizer.SpeakProgress += EhSpeakProgress;
+                synthesizer.SpeakCompleted += EhSpeakCompleted;
+                synthesizer.SetOutputToDefaultAudioDevice();
 
-                _synthesizer.Rate = _speechRate;
-                _synthesizer.Volume = _speechVolume;
+                synthesizer.Rate = _speechRate;
+                synthesizer.Volume = _speechVolume;
                 if (!string.IsNullOrEmpty(_speechVoice))
                 {
-                    _synthesizer.SelectVoice(_speechVoice);
+                    synthesizer.SelectVoice(_speechVoice);
+                }
+
+                var oldSynthesizer = System.Threading.Interlocked.Exchange(ref _synthesizer, synthesizer);
+
+                if (null != oldSynthesizer)
+                {
+                    oldSynthesizer.SpeakCompleted -= EhSpeakCompleted;
+                    oldSynthesizer.SpeakProgress -= EhSpeakProgress;
+                    oldSynthesizer.Dispose();
+                    oldSynthesizer = null;
                 }
             }
         }
 
         public void DetachSynthesizer()
         {
-            if (null != _synthesizer)
+            var synthesizer = System.Threading.Interlocked.Exchange(ref _synthesizer, null);
+            if (null != synthesizer)
             {
-                _synthesizer.SpeakCompleted -= EhSpeakCompleted;
-                _synthesizer.SpeakProgress -= EhSpeakProgress;
-                _synthesizer.Dispose();
-                _synthesizer = null;
+                synthesizer.SpeakCompleted -= EhSpeakCompleted;
+                synthesizer.SpeakProgress -= EhSpeakProgress;
+                synthesizer.Dispose();
+
             }
         }
 
@@ -213,13 +224,10 @@ namespace LediReader.Speech
             }
         }
 
-        public VoiceInfo SpeechVoiceInfo
+        public VoiceInfo GetSpeechVoiceInfo()
         {
-            get
-            {
-                AttachSynthesizer();
-                return _synthesizer.Voice;
-            }
+            AttachSynthesizer();
+            return _synthesizer.Voice;
         }
 
         public IEnumerable<InstalledVoice> GetInstalledVoices()
@@ -326,8 +334,9 @@ namespace LediReader.Speech
                 if (null != _flowDocument)
                 {
                     _flowDocument.Background = _documentBackBrushNormal;
-                    SpeechCompleted?.Invoke(_lastSpokenElement);
                 }
+                DetachSynthesizer();
+                SpeechCompleted?.Invoke(_lastSpokenElement);
             }
         }
 
@@ -335,8 +344,7 @@ namespace LediReader.Speech
         {
             ClearMarkers();
             _nextElementToSpeak = null;
-            var pb = new PromptBuilder();
-            pb.StartVoice(new CultureInfo("en-US"));
+            var stb = new StringBuilder();
 
             int textPosition = 0;
             foreach (var c in HtmlToFlowDocument.Rendering.WpfHelper.GetTextElementsBeginningWith(te))
@@ -344,7 +352,7 @@ namespace LediReader.Speech
                 switch (c)
                 {
                     case Run run:
-                        pb.AppendText(run.Text);
+                        stb.Append(run.Text);
                         AddMarker(textPosition, c);
                         textPosition += run.Text.Length;
                         break;
@@ -357,11 +365,18 @@ namespace LediReader.Speech
                 }
             }
 
-            pb.EndVoice();
+            // Some replacements - but make sure to replace the same number of chars; otherwise we have to adjust the positions
+            stb = stb.Replace(" - ", " , "); // minus sign with spaces to the left and right should take time like a comma
+            stb = stb.Replace("—", ",");  // same for a dash
+
+            var pbd = new PromptBuilder();
+            pbd.StartVoice(new CultureInfo(_speechCulture));
+            pbd.AppendText(stb.ToString());
+            pbd.EndVoice();
 
             _textOffsetInPrompt = -1;
 
-            return pb;
+            return pbd;
         }
 
 

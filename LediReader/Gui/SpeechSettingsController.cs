@@ -38,7 +38,7 @@ namespace LediReader.Gui
                     }
                 }
 
-                SelectedVoice = _speechWorker.SpeechVoiceInfo;
+                SelectedVoice = _speechWorker.GetSpeechVoiceInfo();
                 SpeakingRate = _speechWorker.SpeechRate;
                 SpeakingVolume = _speechWorker.SpeechVolume;
             }
