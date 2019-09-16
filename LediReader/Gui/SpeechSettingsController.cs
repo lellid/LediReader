@@ -160,57 +160,21 @@ namespace LediReader.Gui
         {
             this.SpeakingRate = settings.SpeechRate;
             this.SpeakingVolume = settings.SpeechVolume;
-            GrayLevelDarkMode = ToGrayFromRGBA(settings.WorkingBackgroundColorDarkMode);
-            GrayLevelLightMode = ToGrayFromRGBA(settings.WorkingBackgroundColorLightMode);
+            GrayLevelDarkMode = ColorConverter.ToGrayFromRGBA(settings.WorkingBackgroundColorDarkMode);
+            GrayLevelLightMode = ColorConverter.ToGrayFromRGBA(settings.WorkingBackgroundColorLightMode);
         }
 
-        public static (byte r, byte g, byte b, byte a) ToRGBA(int value)
-        {
-            uint v = (uint)value;
 
-            byte a = (byte)(v & 0xFF);
-            v >>= 8;
-            byte b = (byte)(v & 0xFF);
-            v >>= 8;
-            byte g = (byte)(v & 0xFF);
-            v >>= 8;
-            byte r = (byte)(v & 0xFF);
-            return (r, g, b, a);
-        }
-
-        public static byte ToGrayFromRGBA(int value)
-        {
-            var (r, g, b, a) = ToRGBA(value);
-            return (byte)(0.30 * r + 0.59 * g + 0.11 * b);
-        }
-
-        public static int ToRGBAIntFromGrayLevel(byte grayLevel)
-        {
-            return ToRGBAInt((grayLevel, grayLevel, grayLevel, 255));
-        }
-
-        public static int ToRGBAInt((byte r, byte g, byte b, byte a) tuple)
-        {
-            uint v = 0;
-
-            v |= tuple.r;
-            v <<= 8;
-            v |= tuple.g;
-            v <<= 8;
-            v |= tuple.b;
-            v <<= 8;
-            v |= tuple.a;
-            return (int)v;
-        }
 
         public void Apply(Speech.SpeechSettings settings)
         {
             settings.SpeechVoice = this.SelectedVoice.Name;
+            settings.SpeechCulture = this.SelectedVoice.Culture.Name;
             settings.SpeechRate = (int)this.SpeakingRate;
             settings.SpeechVolume = (int)this.SpeakingVolume;
 
-            settings.WorkingBackgroundColorDarkMode = ToRGBAIntFromGrayLevel((byte)this.GrayLevelDarkMode);
-            settings.WorkingBackgroundColorLightMode = ToRGBAIntFromGrayLevel((byte)this.GrayLevelLightMode);
+            settings.WorkingBackgroundColorDarkMode = ColorConverter.ToRGBAIntFromGrayLevel((byte)this.GrayLevelDarkMode);
+            settings.WorkingBackgroundColorLightMode = ColorConverter.ToRGBAIntFromGrayLevel((byte)this.GrayLevelLightMode);
         }
     }
 }

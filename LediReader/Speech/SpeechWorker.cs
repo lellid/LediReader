@@ -29,8 +29,8 @@ namespace LediReader.Speech
 
         bool _isEmphasisEnabled;
 
-        int _workingBackgroundBlackTheme;
-        int _workingBackgroundLightTheme;
+        uint _workingBackgroundBlackTheme;
+        uint _workingBackgroundLightTheme;
 
         bool _isDarkThemeActivated;
 
@@ -128,14 +128,14 @@ namespace LediReader.Speech
                     {
                         _documentBackBrushNormal = System.Windows.Media.Brushes.Black;
                         _spanBackBrushInPlay = System.Windows.Media.Brushes.Black;
-                        var (r, g, b) = RGBFromInt(_workingBackgroundBlackTheme);
+                        var (r, g, b, _) = Gui.ColorConverter.ToRGBA(_workingBackgroundBlackTheme);
                         _documentBackBrushInPlay = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(r, g, b));
                     }
                     else
                     {
                         _documentBackBrushNormal = System.Windows.Media.Brushes.White;
                         _spanBackBrushInPlay = System.Windows.Media.Brushes.White;
-                        var (r, g, b) = RGBFromInt(_workingBackgroundLightTheme);
+                        var (r, g, b, _) = Gui.ColorConverter.ToRGBA(_workingBackgroundLightTheme);
                         _documentBackBrushInPlay = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(r, g, b));
                     }
                 }
