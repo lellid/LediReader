@@ -13,23 +13,40 @@ namespace LediReader.Gui
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        bool _useDarkTheme;
+        bool _isBookInDarkMode;
+        bool _isGuiInDarkMode;
         double _margin;
 
         #region Bindables
 
-        public bool UseDarkTheme
+        public bool IsBookInDarkMode
         {
             get
             {
-                return _useDarkTheme;
+                return _isBookInDarkMode;
             }
             set
             {
-                if (!(_useDarkTheme == value))
+                if (!(_isBookInDarkMode == value))
                 {
-                    _useDarkTheme = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UseDarkTheme)));
+                    _isBookInDarkMode = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsBookInDarkMode)));
+                }
+            }
+        }
+
+        public bool IsGuiInDarkMode
+        {
+            get
+            {
+                return _isGuiInDarkMode;
+            }
+            set
+            {
+                if (!(_isGuiInDarkMode == value))
+                {
+                    _isGuiInDarkMode = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGuiInDarkMode)));
                 }
             }
         }
@@ -53,13 +70,15 @@ namespace LediReader.Gui
 
         public void Initialize(BookSettings bookSettings)
         {
-            UseDarkTheme = bookSettings.IsInDarkMode;
+            IsGuiInDarkMode = bookSettings.IsGuiInDarkMode;
+            IsBookInDarkMode = bookSettings.IsBookInDarkMode;
             LeftAndRightMargin = bookSettings.LeftAndRightMargin;
         }
 
         public void Apply(BookSettings bookSettings)
         {
-            bookSettings.IsInDarkMode = UseDarkTheme;
+            bookSettings.IsGuiInDarkMode = IsGuiInDarkMode;
+            bookSettings.IsBookInDarkMode = IsBookInDarkMode;
             bookSettings.LeftAndRightMargin = LeftAndRightMargin;
         }
 

@@ -31,7 +31,9 @@
             </MenuItem>
             <MenuItem Header="Play" Click="EhStartSpeech"/>
             <MenuItem Header="Stop" Click="EhStopSpeech"/>
-            <MenuItem Header="GotoPage" Click="EhGotoPage"/>
+            <MenuItem Header="GotoPage" Click="EhGotoPage" />
+            <MenuItem x:Name="_guiMenuItem_IsInAudioMode" Header="In audio mode" IsCheckable="True"
+                     Click="EhChangeBetweenAudioAndReadingMode"  />
         </Menu>
         <ledi:BackgroundRectangle x:Name="_guiViewerBackground" Grid.Row="1" PreviewMouseDown="EhViewerMargin_PreviewMouseDown"/>
         <FlowDocumentPageViewer Grid.Row="1" x:Name="_guiViewer" 

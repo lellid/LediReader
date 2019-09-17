@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using VersOne.Epub;
 
 namespace LediReader
 {
-    public class MainWindowController
+    public class MainWindowController : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public Settings Settings { get; private set; }
 
         public EpubContent _bookContent;
@@ -19,8 +22,66 @@ namespace LediReader
             _instanceStorageService = new InstanceStorageService();
             _imageProvider = new ImageSource(this);
             Settings = new Settings();
-
         }
+
+        #region Bindable properties
+
+        bool _isBookInDarkMode;
+
+        public bool IsBookInDarkMode
+        {
+            get
+            {
+                return _isBookInDarkMode;
+            }
+            set
+            {
+                if (!(_isBookInDarkMode == value))
+                {
+                    _isBookInDarkMode = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsBookInDarkMode)));
+                }
+            }
+        }
+
+        bool _isGuiInDarkMode;
+
+        public bool IsGuiInDarkMode
+        {
+            get
+            {
+                return _isGuiInDarkMode;
+            }
+            set
+            {
+                if (!(_isGuiInDarkMode == value))
+                {
+                    _isGuiInDarkMode = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGuiInDarkMode)));
+                }
+            }
+        }
+
+        bool _isInAudioMode;
+
+        public bool IsInAudioMode
+        {
+            get
+            {
+                return _isInAudioMode;
+            }
+            set
+            {
+                if (!(_isInAudioMode == value))
+                {
+                    _isInAudioMode = value;
+                    Settings.BookSettings.IsInAudioMode = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsInAudioMode)));
+                }
+            }
+        }
+
+        #endregion
 
         public void LoadSettings()
         {
@@ -158,6 +219,8 @@ namespace LediReader
 
         #region Image provider
         ImageSource _imageProvider;
+
+
         public ImageSource ImageProvider
         {
             get

@@ -18,7 +18,6 @@
             <Label Content="Go to page number:"/>
             <Label Content="{Binding PageNumber}"/>
         </StackPanel>
-        <local:Int32UpDown Grid.Row="2" Value="{Binding PageNumber}" Minimum="1" Maximum="{Binding MaxPageNumber}" IsGotoMinimumAndMaximumVisible="True"/>
         <Slider Grid.Row="4" Value="{Binding PageNumber}" Minimum="1" Maximum="{Binding MaxPageNumber}" MinWidth="400"/>
     </Grid>
 </UserControl>

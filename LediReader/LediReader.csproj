@@ -19,4 +19,13 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="Themes\BookStylesDark.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Themes\GuiStylesLight.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
 </Project>

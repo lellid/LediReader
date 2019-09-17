@@ -31,7 +31,18 @@ namespace LediReader.Book
         /// <value>
         ///   <c>true</c> if UI has a black theme; otherwise, <c>false</c>.
         /// </value>
-        public bool IsInDarkMode { get; set; }
+        public bool IsBookInDarkMode { get; set; }
+
+        public bool IsGuiInDarkMode { get; set; }
+
+
+        /// <summary>
+        /// If true, the Gui reacts slightly different than when not in Gui mode.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is in audio mode; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsInAudioMode { get; set; }
 
         public double LeftAndRightMargin { get; set; } = 32;
 
@@ -60,7 +71,11 @@ namespace LediReader.Book
 
                 tw.WriteElementString("Zoom", XmlConvert.ToString(Zoom));
 
-                tw.WriteElementString("BlackTheme", XmlConvert.ToString(IsInDarkMode));
+                tw.WriteElementString("IsBookInDarkMode", XmlConvert.ToString(IsBookInDarkMode));
+
+                tw.WriteElementString("IsGuiInDarkMode", XmlConvert.ToString(IsGuiInDarkMode));
+
+                tw.WriteElementString("IsInAudioMode", XmlConvert.ToString(IsInAudioMode));
 
                 tw.WriteElementString("LeftAndRightMargin", XmlConvert.ToString(LeftAndRightMargin));
             }
@@ -79,7 +94,9 @@ namespace LediReader.Book
             PageNumber = tr.ReadElementContentAsInt("PageNumber", string.Empty);
             Bookmark = tr.ReadElementContentAsString("Bookmark", string.Empty);
             Zoom = tr.ReadElementContentAsDouble("Zoom", string.Empty);
-            IsInDarkMode = tr.ReadElementContentAsBoolean("BlackTheme", string.Empty);
+            IsBookInDarkMode = tr.ReadElementContentAsBoolean("IsBookInDarkMode", string.Empty);
+            IsGuiInDarkMode = tr.ReadElementContentAsBoolean("IsGuiInDarkMode", string.Empty);
+            IsInAudioMode = tr.ReadElementContentAsBoolean("IsInAudioMode", string.Empty);
             LeftAndRightMargin = tr.ReadElementContentAsDouble("LeftAndRightMargin", string.Empty);
 
             tr.ReadEndElement(); // BookSettings

@@ -25,7 +25,7 @@ namespace LediReader
     /// </summary>
     public partial class MainWindow : Window
     {
-        MainWindowController _controller;
+        public MainWindowController Controller { get; private set; }
         SpeechWorker _speech;
         public static StartupEventArgs StartupArguments { get; set; }
 
@@ -45,23 +45,21 @@ namespace LediReader
         /// </summary>
         bool _isInState_ShowingTheDictionary;
 
-        bool _isInDarkMode;
-
         #region Startup and Closing
 
         public MainWindow()
         {
-            _controller = new MainWindowController();
+            Controller = new MainWindowController();
             try
             {
-                _controller.LoadSettings();
+                Controller.LoadSettings();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Could not load settings\r\nThe message is:\r\n{ex.Message}");
             }
 
-            var ss = _controller.Settings.StartupSettings;
+            var ss = Controller.Settings.StartupSettings;
 
             if (ss.IsFullScreen || ss.IsMaximized)
             {
@@ -78,43 +76,45 @@ namespace LediReader
 
             InitializeComponent();
 
-            ApplyDarkTheme(_controller.Settings.BookSettings.IsInDarkMode, reRenderBook: false);
+            ApplyDarkTheme(Controller.Settings.BookSettings.IsBookInDarkMode, Controller.Settings.BookSettings.IsGuiInDarkMode, reRenderBook: false);
+            Controller.IsInAudioMode = Controller.Settings.BookSettings.IsInAudioMode;
 
-            this.DataContext = _controller;
+            this.DataContext = Controller;
             Loaded += EhLoaded;
         }
 
         private void EhLoaded(object sender, RoutedEventArgs e)
         {
-            _speech = new SpeechWorker() { IsInDarkMode = _isInDarkMode };
-            _speech.ApplySettings(_controller.Settings.SpeechSettings);
+            _guiMenuItem_IsInAudioMode.IsChecked = Controller.IsInAudioMode;
+            _speech = new SpeechWorker() { IsInDarkMode = this.IsBookInDarkMode };
+            _speech.ApplySettings(Controller.Settings.SpeechSettings);
             _speech.SpeechCompleted += EhSpeechCompleted;
 
-            Microsoft.Win32.SystemEvents.PowerModeChanged += EhPowerModeChanged;
+            Microsoft.Win32.SystemEvents.PowerModeChanged += EhPowerModeChanged; // Attention: unsubscribe to this event if the application is closing
 
-            _guiDictionary.Controller.LoadDictionariesUsingSettings(_controller.Settings.DictionarySettings);
+            _guiDictionary.Controller.LoadDictionariesUsingSettings(Controller.Settings.DictionarySettings);
 
             HtmlToFlowDocument.Dom.FlowDocument document = null;
             Dictionary<string, string> fontDictionary = null;
             if (null != Gui.StartupSettings.StartupArguments && Gui.StartupSettings.StartupArguments.Length > 0)
             {
-                (document, fontDictionary) = _controller.OpenEbook(Gui.StartupSettings.StartupArguments[0]);
+                (document, fontDictionary) = Controller.OpenEbook(Gui.StartupSettings.StartupArguments[0]);
             }
             else
             {
-                (document, fontDictionary) = _controller.ReopenEbook();
+                (document, fontDictionary) = Controller.ReopenEbook();
             }
 
 
-            _guiViewer.Zoom = _controller.Settings.BookSettings.Zoom;
+            _guiViewer.Zoom = Controller.Settings.BookSettings.Zoom;
             ShowFlowDocument(document, fontDictionary);
             SlobViewer.Gui.GuiActions.UpdateUnloadSubmenus(_guiDictionary.Controller, _guiUnloadMenuItem);
 
             bool navigated = false;
-            if (_controller.Settings.BookSettings.Bookmark != null)
+            if (Controller.Settings.BookSettings.Bookmark != null)
             {
                 var flowDocument = (FlowDocument)_guiViewer.Document;
-                var textElement = HtmlToFlowDocument.Rendering.WpfHelper.GetTextElementFromBookmark(flowDocument, _controller.Settings.BookSettings.Bookmark);
+                var textElement = HtmlToFlowDocument.Rendering.WpfHelper.GetTextElementFromBookmark(flowDocument, Controller.Settings.BookSettings.Bookmark);
                 if (null != textElement)
                 {
                     textElement.BringIntoView();
@@ -124,9 +124,9 @@ namespace LediReader
 
             if (!navigated)
             {
-                if (_guiViewer.CanGoToPage(_controller.Settings.BookSettings.PageNumber))
+                if (_guiViewer.CanGoToPage(Controller.Settings.BookSettings.PageNumber))
                 {
-                    _guiViewer.GoToPage(_controller.Settings.BookSettings.PageNumber);
+                    _guiViewer.GoToPage(Controller.Settings.BookSettings.PageNumber);
                 }
             }
         }
@@ -134,7 +134,7 @@ namespace LediReader
         protected override void OnClosing(CancelEventArgs e)
         {
             // Update file paths
-            _controller.UpdateDictionaryFileNames(_guiDictionary.Controller.Dictionaries.Select(x => x.FileName));
+            Controller.UpdateDictionaryFileNames(_guiDictionary.Controller.Dictionaries.Select(x => x.FileName));
 
             if (_speech.IsSpeechSynthesizingActive)
             {
@@ -158,18 +158,18 @@ namespace LediReader
             if (null != _lastTextElementConsidered)
             {
                 var bookmark = HtmlToFlowDocument.Rendering.WpfHelper.GetBookmarkFromTextElement(_lastTextElementConsidered);
-                _controller.Settings.BookSettings.Bookmark = bookmark;
+                Controller.Settings.BookSettings.Bookmark = bookmark;
             }
 
 
             // save the current page
-            _controller.Settings.BookSettings.PageNumber = _guiViewer.MasterPageNumber;
-            _controller.Settings.BookSettings.Zoom = _guiViewer.Zoom;
-            _speech.GetSettings(_controller.Settings.SpeechSettings);
+            Controller.Settings.BookSettings.PageNumber = _guiViewer.MasterPageNumber;
+            Controller.Settings.BookSettings.Zoom = _guiViewer.Zoom;
+            _speech.GetSettings(Controller.Settings.SpeechSettings);
 
             // save windows state
             {
-                var ss = _controller.Settings.StartupSettings;
+                var ss = Controller.Settings.StartupSettings;
                 ss.Left = this.Left;
                 ss.Top = this.Top;
                 ss.Width = this.ActualWidth;
@@ -178,7 +178,10 @@ namespace LediReader
                 ss.IsFullScreen = false;
             }
 
-            _controller.SaveSettings();
+            Controller.SaveSettings();
+
+            Microsoft.Win32.SystemEvents.PowerModeChanged -= EhPowerModeChanged;
+
             base.OnClosing(e);
         }
 
@@ -194,7 +197,6 @@ namespace LediReader
                     break;
                 case PowerModes.Suspend:
                     _speech.StopSpeech();
-                    _speech.DetachSynthesizer();
                     break;
                 default:
                     break;
@@ -208,7 +210,7 @@ namespace LediReader
         {
             if (null != flowDocument)
             {
-                var renderer = new HtmlToFlowDocument.Rendering.WpfRenderer() { InvertColors = UseDarkTheme, AttachDomAsTags = true, FontDictionary = fontDictionary };
+                var renderer = new HtmlToFlowDocument.Rendering.WpfRenderer() { InvertColors = IsBookInDarkMode, AttachDomAsTags = true, FontDictionary = fontDictionary };
                 var flowDocumentE = renderer.Render(flowDocument);
 
                 flowDocumentE.IsColumnWidthFlexible = false;
@@ -226,56 +228,71 @@ namespace LediReader
 
         #region Gui event handlers
 
-        public bool UseDarkTheme
+        public bool IsBookInDarkMode
         {
             get
             {
-                return _isInDarkMode;
+                return Controller.IsBookInDarkMode;
             }
             set
             {
-                if (!(_isInDarkMode == value))
+                if (!(IsBookInDarkMode == value))
                 {
-                    ApplyDarkTheme(value, reRenderBook: true);
+                    ApplyDarkTheme(value, IsGuiInDarkMode, reRenderBook: true);
                 }
             }
         }
 
-        private void ApplyDarkTheme(bool useDarkTheme, bool reRenderBook)
+        public bool IsGuiInDarkMode
         {
-            _isInDarkMode = useDarkTheme;
+            get
+            {
+                return Controller.IsGuiInDarkMode;
+            }
+            set
+            {
+                if (!(IsGuiInDarkMode == value))
+                {
+                    ApplyDarkTheme(IsBookInDarkMode, value, reRenderBook: false);
+                }
+            }
+        }
 
-            _controller.Settings.BookSettings.IsInDarkMode = _isInDarkMode;
-            _controller.Settings.DictionarySettings.IsInDarkMode = _isInDarkMode;
+        private void ApplyDarkTheme(bool isBookInDarkMode, bool isGuiInDarkMode, bool reRenderBook)
+        {
+            Controller.IsBookInDarkMode = isBookInDarkMode;
+            Controller.IsGuiInDarkMode = isGuiInDarkMode;
+            Controller.Settings.BookSettings.IsBookInDarkMode = isBookInDarkMode;
+            Controller.Settings.BookSettings.IsGuiInDarkMode = isGuiInDarkMode;
+            Controller.Settings.DictionarySettings.IsInDarkMode = isBookInDarkMode;
+
+
 
             if (null != _speech)
-                _speech.IsInDarkMode = _isInDarkMode;
+                _speech.IsInDarkMode = isBookInDarkMode;
 
-            if (_isInDarkMode)
-                AppThemeSelector.ApplyTheme(new[] { new Uri("pack://application:,,,/Themes/StylesDark.xaml") });
+            var themes = new List<Uri>();
+
+            if (isBookInDarkMode)
+                themes.Add(new Uri("pack://application:,,,/Themes/BookStylesDark.xaml"));
             else
-                AppThemeSelector.ApplyTheme(new[] { new Uri("pack://application:,,,/Themes/StylesLight.xaml") });
+                themes.Add(new Uri("pack://application:,,,/Themes/BookStylesLight.xaml"));
+
+            if (isGuiInDarkMode)
+                themes.Add(new Uri("pack://application:,,,/Themes/GuiStylesDark.xaml"));
+            else
+                themes.Add(new Uri("pack://application:,,,/Themes/GuiStylesLight.xaml"));
+
+            AppThemeSelector.ApplyTheme(themes.ToArray());
 
             if (reRenderBook)
             {
-                var (doc, fontDictionary) = _controller.ReopenEbook();
+                var (doc, fontDictionary) = Controller.ReopenEbook();
                 ShowFlowDocument(doc, fontDictionary);
-
-                /*
-            if (_guiViewer.Document is FlowDocument doc)
-            {
-                _guiViewer.Document = null;
-                var colorInverter = new HtmlToFlowDocument.Rendering.FlowDocumentColorInverter();
-                colorInverter.InvertColorsRecursively(doc);
-                doc.Foreground = _useDarkTheme ? Brushes.White : Brushes.Black;
-                _guiViewer.Document = doc;
-            }
-                */
-
-
-
             }
         }
+
+
 
 
         private void EhOpenBook(object sender, RoutedEventArgs e)
@@ -290,7 +307,7 @@ namespace LediReader
 
             if (true == dlg.ShowDialog(this))
             {
-                var (flowDocument, fontDictionary) = _controller.OpenEbook(dlg.FileName);
+                var (flowDocument, fontDictionary) = Controller.OpenEbook(dlg.FileName);
                 ShowFlowDocument(flowDocument, fontDictionary);
             }
         }
@@ -298,7 +315,7 @@ namespace LediReader
         private void EhSpeechSettings(object sender, RoutedEventArgs e)
         {
             var controller = new Gui.SpeechSettingsController();
-            controller.Initialize(_controller.Settings.SpeechSettings);
+            controller.Initialize(Controller.Settings.SpeechSettings);
             controller.Synthesizer = _speech;
             var control = new Gui.SpeechSettingsControl(controller);
 
@@ -307,8 +324,8 @@ namespace LediReader
 
             if (true == window.ShowDialog())
             {
-                controller.Apply(_controller.Settings.SpeechSettings);
-                _speech.ApplySettings(_controller.Settings.SpeechSettings);
+                controller.Apply(Controller.Settings.SpeechSettings);
+                _speech.ApplySettings(Controller.Settings.SpeechSettings);
             }
         }
 
@@ -431,6 +448,10 @@ namespace LediReader
             {
                 Action_StartSpeech();
             }
+            else if (Controller.IsInAudioMode && !_guiViewer.Selection.IsEmpty)
+            {
+                Action_StartSpeech();
+            }
             else
             {
                 Action_GotoNextPage();
@@ -446,6 +467,10 @@ namespace LediReader
             else if (_isInState_WaitForResumingSpeech)
             {
                 _isInState_WaitForResumingSpeech = false;
+            }
+            else if (Controller.IsInAudioMode && !_guiViewer.Selection.IsEmpty)
+            {
+                _guiViewer.Selection.Select(_guiViewer.Selection.Start, _guiViewer.Selection.Start);
             }
             else
             {
@@ -508,7 +533,7 @@ namespace LediReader
                 _isInState_ShowingTheDictionary = true;
                 _guiDictionary.Visibility = Visibility.Visible;
                 _guiDictionary.Margin = new Thickness(0, 0, _guiViewer.Margin.Right, 0);
-                _guiDictionary.Controller.IsInDarkMode = _isInDarkMode;
+                _guiDictionary.Controller.IsInDarkMode = IsBookInDarkMode;
                 _guiDictionary.Controller.ShowContentForUntrimmedKey(phrase);
             }
         }
@@ -554,19 +579,20 @@ namespace LediReader
         {
             var control = new Gui.BookSettingsControl();
             var controller = control.Controller;
-            controller.Initialize(this._controller.Settings.BookSettings);
+            controller.Initialize(this.Controller.Settings.BookSettings);
             var dlg = new Gui.DialogShellViewWpf(control);
             if (true == dlg.ShowDialog())
             {
-                controller.Apply(this._controller.Settings.BookSettings);
-                ApplyBookSettings(this._controller.Settings.BookSettings);
+                controller.Apply(this.Controller.Settings.BookSettings);
+                ApplyBookSettings(this.Controller.Settings.BookSettings);
             }
         }
 
         private void ApplyBookSettings(Book.BookSettings settings)
         {
             _guiViewer.Margin = new Thickness(settings.LeftAndRightMargin, 0, settings.LeftAndRightMargin, 0);
-            UseDarkTheme = settings.IsInDarkMode;
+            this.IsGuiInDarkMode = settings.IsGuiInDarkMode;
+            this.IsBookInDarkMode = settings.IsBookInDarkMode;
         }
 
         private void EhRegisterApplication(object sender, RoutedEventArgs e)
@@ -577,6 +603,11 @@ namespace LediReader
         private void EhUnregisterApplication(object sender, RoutedEventArgs e)
         {
             Registration.AppRegistration.UnregisterApplication();
+        }
+
+        private void EhChangeBetweenAudioAndReadingMode(object sender, RoutedEventArgs e)
+        {
+            Controller.IsInAudioMode = _guiMenuItem_IsInAudioMode.IsChecked == true;
         }
 
 

@@ -3,8 +3,10 @@
                     xmlns:ledi="clr-namespace:LediReader.Gui">
 
     <Color x:Key="WindowBackgroundColorWhite">#FFFFFF</Color>
+    <Color x:Key="WindowBackgroundColorBlack">#000000</Color>
 
     <SolidColorBrush x:Key="WindowBackgroundBrushWhite" Color="{StaticResource WindowBackgroundColorWhite}"/>
+    <SolidColorBrush x:Key="WindowBackgroundBrushBlack" Color="{StaticResource WindowBackgroundColorBlack}"/>
 
     <Style TargetType="{x:Type ledi:BackgroundRectangle}" xmlns:ledi="clr-namespace:LediReader.Gui">
         <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}"/>
@@ -13,6 +15,17 @@
     <Style TargetType="{x:Type slob:BackgroundRectangle}" xmlns:slob="clr-namespace:SlobViewer.Gui;assembly=SlobDictionary">
         <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}"/>
     </Style>
+
+    <Style TargetType="{x:Type FlowDocumentScrollViewer}">
+        <Setter Property="Foreground" Value="{StaticResource WindowBackgroundBrushBlack}"/>
+        <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}"/>
+    </Style>
+
+    <Style TargetType="{x:Type FlowDocumentPageViewer}">
+        <Setter Property="Foreground" Value="{StaticResource WindowBackgroundBrushBlack}"/>
+        <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}"/>
+    </Style>
+
 
 
 </ResourceDictionary>

@@ -11,6 +11,8 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="2"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="16"/>
 
             <RowDefinition Height="Auto"/>
@@ -20,13 +22,21 @@
 
         </Grid.RowDefinitions>
         <Label Content="Theme:" Grid.Row="0"/>
-        <CheckBox Content="Use dark theme" Grid.Row="2" IsChecked="{Binding UseDarkTheme, Mode=TwoWay}"/>
+        <CheckBox Content="Use dark theme (for book)" Grid.Row="2" 
+                  IsChecked="{Binding IsBookInDarkMode, Mode=TwoWay}"
+                  ToolTip="If checked, the book, and the contents of the dictionary entries are displayed in inverted colors."
+                  />
 
-        <StackPanel Orientation="Horizontal" Grid.Row="4">
+        <CheckBox Content="Use dark theme (for Gui)" Grid.Row="4" 
+                  IsChecked="{Binding IsGuiInDarkMode, Mode=TwoWay}"
+                  ToolTip="Do not check this box if you already use the dark mode of Windows 10 (1903 or higher)."
+                  />
+
+        <StackPanel Orientation="Horizontal" Grid.Row="6">
             <Label Content="Left and right margin:"/>
             <Label Content="{Binding LeftAndRightMargin}"/>
         </StackPanel>
-        <Slider x:Name="_guiSlider" Grid.Row="6" Minimum="16" Maximum="128" Value="{Binding LeftAndRightMargin, Mode=TwoWay}"/>
+        <Slider x:Name="_guiSlider" Grid.Row="8" Minimum="16" Maximum="128" Value="{Binding LeftAndRightMargin, Mode=TwoWay}"/>
 
     </Grid>
 </UserControl>
