@@ -373,6 +373,7 @@ namespace LediReader.Speech
             ClearMarkers();
             _nextElementToSpeak = null;
             var stb = new StringBuilder();
+            var single = new StringBuilder();
 
             int textPosition = 0;
             foreach (var c in HtmlToFlowDocument.Rendering.WpfHelper.GetTextElementsBeginningWith(te))
@@ -380,9 +381,16 @@ namespace LediReader.Speech
                 switch (c)
                 {
                     case Run run:
-                        stb.Append(run.Text);
+                        single.Clear();
+                        single.Append(run.Text);
+                        single = single.Replace("\u2012", ", ");  // Figure dash
+                        single = single.Replace("\u2013", ", ");  // EN dash
+                        single = single.Replace("\u2014", ", ");  // EM dash
+                        single = single.Replace("\u2E3A", ", ");  // Two-EM dash
+                        single = single.Replace("\u2E3B", ", ");  // Three-EM dash
+                        stb.Append(single);
                         AddMarker(textPosition, c);
-                        textPosition += run.Text.Length;
+                        textPosition += single.Length;
                         break;
                 }
 
@@ -395,11 +403,6 @@ namespace LediReader.Speech
 
             // Some replacements - but make sure to replace the same number of chars; otherwise we have to adjust the positions
             stb = stb.Replace(" - ", " , "); // minus sign with spaces to the left and right should take time like a comma
-            stb = stb.Replace("\u2012", ",");  // Figure dash
-            stb = stb.Replace("\u2013", ",");  // EN dash
-            stb = stb.Replace("\u2014", ",");  // EM dash
-            stb = stb.Replace("\u2E3A", ",");  // Two-EM dash
-            stb = stb.Replace("\u2E3B", ",");  // Three-EM dash
 
             var pbd = new PromptBuilder();
             pbd.StartVoice(new CultureInfo(_speechCulture));
