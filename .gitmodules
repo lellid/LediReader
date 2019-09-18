@@ -3,5 +3,4 @@
 	url = https://github.com/lellid/HtmlToFlowDocument.git
 [submodule "EpubReader"]
 	path = EpubReader
-	url = https://github.com/lellid/EpubReader.git
-	branch = Lellid
+	url = https://github.com/vers-one/EpubReader.git
