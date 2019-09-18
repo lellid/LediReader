@@ -86,7 +86,7 @@ namespace LediReader
         private void EhLoaded(object sender, RoutedEventArgs e)
         {
             _guiMenuItem_IsInAudioMode.IsChecked = Controller.IsInAudioMode;
-            _speech = new SpeechWorker() { IsInDarkMode = this.IsBookInDarkMode };
+            _speech = new SpeechWorker() { IsInDarkMode = Controller.IsBookInDarkMode };
             _speech.ApplySettings(Controller.Settings.SpeechSettings);
             _speech.SpeechCompleted += EhSpeechCompleted;
 
@@ -118,6 +118,9 @@ namespace LediReader
                 if (null != textElement)
                 {
                     textElement.BringIntoView();
+                    if (textElement is TextElement te)
+                        _guiViewer.Selection.Select(te.ContentStart, te.ContentEnd);
+                    _guiViewer.Focus();
                     navigated = true;
                 }
             }
@@ -210,7 +213,7 @@ namespace LediReader
         {
             if (null != flowDocument)
             {
-                var renderer = new HtmlToFlowDocument.Rendering.WpfRenderer() { InvertColors = IsBookInDarkMode, AttachDomAsTags = true, FontDictionary = fontDictionary };
+                var renderer = new HtmlToFlowDocument.Rendering.WpfRenderer() { InvertColors = Controller.IsBookInDarkMode, AttachDomAsTags = true, FontDictionary = fontDictionary };
                 var flowDocumentE = renderer.Render(flowDocument);
 
                 flowDocumentE.IsColumnWidthFlexible = false;
@@ -228,35 +231,9 @@ namespace LediReader
 
         #region Gui event handlers
 
-        public bool IsBookInDarkMode
-        {
-            get
-            {
-                return Controller.IsBookInDarkMode;
-            }
-            set
-            {
-                if (!(IsBookInDarkMode == value))
-                {
-                    ApplyDarkTheme(value, IsGuiInDarkMode, reRenderBook: true);
-                }
-            }
-        }
 
-        public bool IsGuiInDarkMode
-        {
-            get
-            {
-                return Controller.IsGuiInDarkMode;
-            }
-            set
-            {
-                if (!(IsGuiInDarkMode == value))
-                {
-                    ApplyDarkTheme(IsBookInDarkMode, value, reRenderBook: false);
-                }
-            }
-        }
+
+
 
         private void ApplyDarkTheme(bool isBookInDarkMode, bool isGuiInDarkMode, bool reRenderBook)
         {
@@ -533,7 +510,7 @@ namespace LediReader
                 _isInState_ShowingTheDictionary = true;
                 _guiDictionary.Visibility = Visibility.Visible;
                 _guiDictionary.Margin = new Thickness(0, 0, _guiViewer.Margin.Right, 0);
-                _guiDictionary.Controller.IsInDarkMode = IsBookInDarkMode;
+                _guiDictionary.Controller.IsInDarkMode = Controller.IsBookInDarkMode;
                 _guiDictionary.Controller.ShowContentForUntrimmedKey(phrase);
             }
         }
@@ -591,8 +568,7 @@ namespace LediReader
         private void ApplyBookSettings(Book.BookSettings settings)
         {
             _guiViewer.Margin = new Thickness(settings.LeftAndRightMargin, 0, settings.LeftAndRightMargin, 0);
-            this.IsGuiInDarkMode = settings.IsGuiInDarkMode;
-            this.IsBookInDarkMode = settings.IsBookInDarkMode;
+            ApplyDarkTheme(settings.IsBookInDarkMode, settings.IsGuiInDarkMode, settings.IsBookInDarkMode != Controller.IsBookInDarkMode);
         }
 
         private void EhRegisterApplication(object sender, RoutedEventArgs e)

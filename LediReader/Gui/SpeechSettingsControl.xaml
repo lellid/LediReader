@@ -27,6 +27,8 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="16"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="1"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="4"/>
@@ -67,13 +69,15 @@
         </StackPanel>
         <Slider x:Name="_guiVolumeSlider" Grid.Row="10" Minimum="0" Maximum="100" SmallChange="5" LargeChange="10" TickFrequency="1"  Value="{Binding SpeakingVolume, Mode=TwoWay}"/>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="12">
+        <CheckBox Grid.Row="12" Content="Keep display on during speech" IsChecked="{Binding KeepDisplayOn}"/>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="14">
             <Label  Content="Gray level for inactive text (dark mode) :"/>
             <Label Content="{Binding GrayLevelDarkMode}"/>
         </StackPanel>
-        <Slider x:Name="_guiDarkModeGrayLevelSlider" Grid.Row="14" Minimum="0" Maximum="255" SmallChange="8" LargeChange="16" TickFrequency="1"  Value="{Binding GrayLevelDarkMode, Mode=TwoWay}"/>
-        <Border Grid.Row="16" Background="{Binding GrayLevelDarkMode, Converter={StaticResource GrayLevelConverter}}"/>
-        <FlowDocumentScrollViewer Grid.Row="16" >
+        <Slider x:Name="_guiDarkModeGrayLevelSlider" Grid.Row="16" Minimum="0" Maximum="255" SmallChange="8" LargeChange="16" TickFrequency="1"  Value="{Binding GrayLevelDarkMode, Mode=TwoWay}"/>
+        <Border Grid.Row="18" Background="{Binding GrayLevelDarkMode, Converter={StaticResource GrayLevelConverter}}"/>
+        <FlowDocumentScrollViewer Grid.Row="18" >
             <FlowDocument Foreground="White">
                 <Paragraph>
                     <Run>Lorem ipsum dolor sit amet, consetetur sadipscing elitr,</Run>
@@ -87,13 +91,13 @@
             </FlowDocument>
         </FlowDocumentScrollViewer>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="18">
+        <StackPanel Orientation="Horizontal" Grid.Row="20">
             <Label  Content="Gray level for inactive text (light mode) :"/>
             <Label Content="{Binding GrayLevelLightMode}"/>
         </StackPanel>
-        <Slider x:Name="_guiLightModeGrayLevelSlider" Grid.Row="20" Minimum="0" Maximum="255" SmallChange="8" LargeChange="16" TickFrequency="1"  Value="{Binding GrayLevelLightMode, Mode=TwoWay}"/>
-        <Border Grid.Row="22" Background="{Binding GrayLevelLightMode, Converter={StaticResource GrayLevelConverter}}"/>
-        <FlowDocumentScrollViewer Grid.Row="22" >
+        <Slider x:Name="_guiLightModeGrayLevelSlider" Grid.Row="22" Minimum="0" Maximum="255" SmallChange="8" LargeChange="16" TickFrequency="1"  Value="{Binding GrayLevelLightMode, Mode=TwoWay}"/>
+        <Border Grid.Row="24" Background="{Binding GrayLevelLightMode, Converter={StaticResource GrayLevelConverter}}"/>
+        <FlowDocumentScrollViewer Grid.Row="24" >
             <FlowDocument Foreground="Black">
                 <Paragraph>
                     <Run>Lorem ipsum dolor sit amet, consetetur sadipscing elitr,</Run>

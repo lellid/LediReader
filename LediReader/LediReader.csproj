@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2002-preview" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\EpubReader\Source\VersOne.Epub\VersOne.Epub.csproj" />
     <ProjectReference Include="..\HtmlToFlowDocument\HtmlToFlowDocument.Wpf\HtmlToFlowDocument.Wpf.csproj" />
     <ProjectReference Include="..\HtmlToFlowDocument\HtmlToFlowDocument\HtmlToFlowDocument.csproj" />

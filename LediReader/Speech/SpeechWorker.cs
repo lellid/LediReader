@@ -35,6 +35,8 @@ namespace LediReader.Speech
 
         bool _isInDarkMode;
 
+        bool _keepDisplayOnDuringSpeech;
+
         System.Windows.Media.Brush _documentBackBrushNormal = System.Windows.Media.Brushes.White;
         System.Windows.Media.Brush _documentBackBrushInPlay = System.Windows.Media.Brushes.LightGray;
         System.Windows.Media.Brush _spanBackBrushInPlay = System.Windows.Media.Brushes.White;
@@ -97,6 +99,7 @@ namespace LediReader.Speech
             _speechVoice = s.SpeechVoice;
             _speechRate = s.SpeechRate;
             _speechVolume = s.SpeechVolume;
+            _keepDisplayOnDuringSpeech = s.KeepDisplayOnDuringSpeech;
             _isEmphasisEnabled = s.IsEmphasisEnabled;
 
             if (null != _synthesizer)
@@ -123,6 +126,7 @@ namespace LediReader.Speech
             s.SpeechVoice = _speechVoice;
             s.SpeechRate = _speechRate;
             s.SpeechVolume = _speechVolume;
+            s.KeepDisplayOnDuringSpeech = _keepDisplayOnDuringSpeech;
             s.IsEmphasisEnabled = _isEmphasisEnabled;
         }
 
@@ -249,6 +253,27 @@ namespace LediReader.Speech
             return null;
         }
 
+        IDisposable _displayRequest;
+        void LockDisplay()
+        {
+            if (_keepDisplayOnDuringSpeech)
+            {
+                if (Environment.OSVersion.Version.Major > 6 || (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor >= 2))
+                {
+                    if (null == _displayRequest)
+                    {
+                        var oldRequest = System.Threading.Interlocked.Exchange(ref _displayRequest, new DisplayRequestLevel1());
+                        oldRequest?.Dispose();
+                    }
+                }
+            }
+        }
+
+        void ReleaseDisplay()
+        {
+            var oldRequest = System.Threading.Interlocked.Exchange(ref _displayRequest, null);
+            oldRequest?.Dispose();
+        }
 
         public void StartSpeech(TextElement te)
         {
@@ -256,6 +281,8 @@ namespace LediReader.Speech
             {
                 AttachSynthesizer();
             }
+
+            LockDisplay();
 
             InternalStartSpeech(te);
         }
@@ -336,6 +363,7 @@ namespace LediReader.Speech
                     _flowDocument.Background = _documentBackBrushNormal;
                 }
                 DetachSynthesizer();
+                ReleaseDisplay();
                 SpeechCompleted?.Invoke(_lastSpokenElement);
             }
         }
@@ -367,7 +395,11 @@ namespace LediReader.Speech
 
             // Some replacements - but make sure to replace the same number of chars; otherwise we have to adjust the positions
             stb = stb.Replace(" - ", " , "); // minus sign with spaces to the left and right should take time like a comma
-            stb = stb.Replace("—", ",");  // same for a dash
+            stb = stb.Replace("\u2012", ",");  // Figure dash
+            stb = stb.Replace("\u2013", ",");  // EN dash
+            stb = stb.Replace("\u2014", ",");  // EM dash
+            stb = stb.Replace("\u2E3A", ",");  // Two-EM dash
+            stb = stb.Replace("\u2E3B", ",");  // Three-EM dash
 
             var pbd = new PromptBuilder();
             pbd.StartVoice(new CultureInfo(_speechCulture));

@@ -59,10 +59,9 @@ namespace LediReader.Gui
             }
             set
             {
-                var oldValue = _selectedVoice;
-                _selectedVoice = value;
-                if (_selectedVoice != oldValue)
+                if (!(_selectedVoice == value))
                 {
+                    _selectedVoice = value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedVoice)));
                     if (null != _speechWorker && _selectedVoice != null)
                         _speechWorker.SpeechVoice = _selectedVoice.Name;
@@ -80,10 +79,10 @@ namespace LediReader.Gui
             }
             set
             {
-                var oldValue = _speakingRate;
-                _speakingRate = (int)Math.Round(Math.Min(10, Math.Max(-10, value)));
-                if (_speakingRate != oldValue)
+                value = (int)Math.Round(Math.Min(10, Math.Max(-10, value)));
+                if (!(_speakingRate == value))
                 {
+                    _speakingRate = (int)value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SpeakingRate)));
                     if (null != _speechWorker)
                     {
@@ -103,10 +102,11 @@ namespace LediReader.Gui
             }
             set
             {
-                var oldValue = _speakingVolume;
-                _speakingVolume = (int)Math.Round(Math.Min(100, Math.Max(0, value)));
-                if (_speakingVolume != oldValue)
+
+                value = Math.Round(Math.Min(100, Math.Max(0, value)));
+                if (!(_speakingVolume == value))
                 {
+                    _speakingVolume = (int)value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SpeakingVolume)));
                     if (null != _speechWorker)
                     {
@@ -126,10 +126,11 @@ namespace LediReader.Gui
             }
             set
             {
-                var oldValue = _grayLevelDarkMode;
-                _grayLevelDarkMode = (int)Math.Round(Math.Min(255, Math.Max(0, value)));
-                if (_grayLevelDarkMode != oldValue)
+
+                value = Math.Round(Math.Min(255, Math.Max(0, value)));
+                if (!(_grayLevelDarkMode == value))
                 {
+                    _grayLevelDarkMode = (int)value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GrayLevelDarkMode)));
                 }
             }
@@ -144,15 +145,32 @@ namespace LediReader.Gui
             }
             set
             {
-                var oldValue = _grayLevelLightMode;
-                _grayLevelLightMode = (int)Math.Round(Math.Min(255, Math.Max(0, value)));
-                if (_grayLevelLightMode != oldValue)
+
+                value = Math.Round(Math.Min(255, Math.Max(0, value)));
+                if (!(_grayLevelLightMode == value))
                 {
+                    _grayLevelLightMode = (int)value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GrayLevelLightMode)));
                 }
             }
         }
 
+        bool _keepDisplayOn;
+        public bool KeepDisplayOn
+        {
+            get
+            {
+                return _keepDisplayOn;
+            }
+            set
+            {
+                if (!(_keepDisplayOn == value))
+                {
+                    _keepDisplayOn = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(KeepDisplayOn)));
+                }
+            }
+        }
 
         #endregion
 
@@ -160,6 +178,7 @@ namespace LediReader.Gui
         {
             this.SpeakingRate = settings.SpeechRate;
             this.SpeakingVolume = settings.SpeechVolume;
+            this.KeepDisplayOn = settings.KeepDisplayOnDuringSpeech;
             GrayLevelDarkMode = ColorConverter.ToGrayFromRGBA(settings.WorkingBackgroundColorDarkMode);
             GrayLevelLightMode = ColorConverter.ToGrayFromRGBA(settings.WorkingBackgroundColorLightMode);
         }
@@ -172,6 +191,7 @@ namespace LediReader.Gui
             settings.SpeechCulture = this.SelectedVoice.Culture.Name;
             settings.SpeechRate = (int)this.SpeakingRate;
             settings.SpeechVolume = (int)this.SpeakingVolume;
+            settings.KeepDisplayOnDuringSpeech = this.KeepDisplayOn;
 
             settings.WorkingBackgroundColorDarkMode = ColorConverter.ToRGBAIntFromGrayLevel((byte)this.GrayLevelDarkMode);
             settings.WorkingBackgroundColorLightMode = ColorConverter.ToRGBAIntFromGrayLevel((byte)this.GrayLevelLightMode);

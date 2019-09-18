@@ -1225,7 +1225,7 @@
                                         <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}" Style="{StaticResource HorizontalScrollBarPageButton}"/>
                                     </Track.IncreaseRepeatButton>
                                     <Track.Thumb>
-                                        <Thumb Style="{DynamicResource HorisontalThumbStyle}"/>
+                                        <Thumb Style="{DynamicResource HorizontalThumbStyle}"/>
                                     </Track.Thumb>
                                 </Track>
                                 <RepeatButton Grid.Column="2" Command="{x:Static ScrollBar.LineRightCommand}" IsEnabled="{TemplateBinding IsMouseOver}" Style="{DynamicResource RepeatRightButtonStyle}"/>
