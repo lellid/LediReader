@@ -17,17 +17,17 @@ using System.Windows.Shapes;
 
 namespace LediReader.Gui
 {
-    /// <summary>
-    /// Interaction logic for GoToPageControl.xaml
-    /// </summary>
-    public partial class GoToPageControl : UserControl
+  /// <summary>
+  /// Interaction logic for GoToPageControl.xaml
+  /// </summary>
+  public partial class GoToPageControl : UserControl
+  {
+    public GotoPageController Controller { get; private set; }
+    public GoToPageControl()
     {
-        public GotoPageController Controller { get; private set; }
-        public GoToPageControl()
-        {
-            Controller = new GotoPageController();
-            this.DataContext = Controller;
-            InitializeComponent();
-        }
+      Controller = new GotoPageController();
+      this.DataContext = Controller;
+      InitializeComponent();
     }
+  }
 }

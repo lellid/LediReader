@@ -8,25 +8,25 @@ using System.Threading.Tasks;
 
 namespace LediReader.Gui
 {
+  /// <summary>
+  /// This interface is intended to provide a "shell" as a dialog which can host a user control.
+  /// </summary>
+  public interface IDialogShellView
+  {
     /// <summary>
-    /// This interface is intended to provide a "shell" as a dialog which can host a user control.
+    /// Sets if the Apply button should be visible.
     /// </summary>
-    public interface IDialogShellView
-    {
-        /// <summary>
-        /// Sets if the Apply button should be visible.
-        /// </summary>
-        bool ApplyVisible { set; }
+    bool ApplyVisible { set; }
 
-        /// <summary>
-        /// Sets the title
-        /// </summary>
-        string Title { set; }
+    /// <summary>
+    /// Sets the title
+    /// </summary>
+    string Title { set; }
 
-        event Action<System.ComponentModel.CancelEventArgs> ButtonOKPressed;
+    event Action<System.ComponentModel.CancelEventArgs> ButtonOKPressed;
 
-        event Action ButtonCancelPressed;
+    event Action ButtonCancelPressed;
 
-        event Action ButtonApplyPressed;
-    }
+    event Action ButtonApplyPressed;
+  }
 }

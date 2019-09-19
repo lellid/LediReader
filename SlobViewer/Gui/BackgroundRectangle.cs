@@ -11,7 +11,7 @@ using System.Windows.Shapes;
 
 namespace SlobViewer.Gui
 {
-    public class BackgroundRectangle : System.Windows.Controls.Border
-    {
-    }
+  public class BackgroundRectangle : System.Windows.Controls.Border
+  {
+  }
 }

@@ -17,26 +17,26 @@ using System.Windows.Shapes;
 
 namespace LediReader.Gui
 {
-    /// <summary>
-    /// Interaction logic for SpeechSettingsControl.xaml
-    /// </summary>
-    public partial class SpeechSettingsControl : UserControl
+  /// <summary>
+  /// Interaction logic for SpeechSettingsControl.xaml
+  /// </summary>
+  public partial class SpeechSettingsControl : UserControl
+  {
+    SpeechSettingsController Controller { get; set; }
+
+    public SpeechSettingsControl()
     {
-        SpeechSettingsController Controller { get; set; }
-
-        public SpeechSettingsControl()
-        {
-            Controller = new SpeechSettingsController();
-            InitializeComponent();
-        }
-
-        public SpeechSettingsControl(SpeechSettingsController controller)
-        {
-            Controller = controller;
-            this.DataContext = controller;
-            InitializeComponent();
-        }
-
-
+      Controller = new SpeechSettingsController();
+      InitializeComponent();
     }
+
+    public SpeechSettingsControl(SpeechSettingsController controller)
+    {
+      Controller = controller;
+      this.DataContext = controller;
+      InitializeComponent();
+    }
+
+
+  }
 }

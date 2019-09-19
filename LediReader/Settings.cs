@@ -7,58 +7,58 @@ using System.Xml;
 
 namespace LediReader
 {
-    public class Settings
+  public class Settings
+  {
+    public Gui.StartupSettings StartupSettings { get; set; }
+
+    public Book.BookSettings BookSettings { get; set; }
+
+    public SlobViewer.Settings DictionarySettings { get; set; }
+
+    public Speech.SpeechSettings SpeechSettings { get; set; }
+
+
+
+    public Settings()
     {
-        public Gui.StartupSettings StartupSettings { get; set; }
-
-        public Book.BookSettings BookSettings { get; set; }
-
-        public SlobViewer.Settings DictionarySettings { get; set; }
-
-        public Speech.SpeechSettings SpeechSettings { get; set; }
-
-
-
-        public Settings()
-        {
-            StartupSettings = new Gui.StartupSettings();
-            BookSettings = new Book.BookSettings();
-            DictionarySettings = new SlobViewer.Settings();
-            SpeechSettings = new Speech.SpeechSettings();
-        }
-
-        public Settings(XmlReader tr)
-        {
-            LoadXml(tr);
-        }
-
-        public void SaveXml(XmlWriter tw)
-        {
-            tw.WriteStartElement("Settings");
-            tw.WriteAttributeString("Version", "1");
-
-            StartupSettings.SaveXml(tw);
-            BookSettings.SaveXml(tw);
-            DictionarySettings.SaveXml(tw);
-            SpeechSettings.SaveXml(tw);
-
-            tw.WriteEndElement(); // Settings
-        }
-
-        public void LoadXml(XmlReader tr)
-        {
-
-            var version = tr.GetAttribute("Version");
-            tr.ReadStartElement("Settings");
-
-            StartupSettings = new Gui.StartupSettings(tr);
-            BookSettings = new Book.BookSettings(tr);
-            DictionarySettings = new SlobViewer.Settings(tr);
-            SpeechSettings = new Speech.SpeechSettings(tr);
-
-            tr.ReadEndElement(); // Settings
-
-        }
+      StartupSettings = new Gui.StartupSettings();
+      BookSettings = new Book.BookSettings();
+      DictionarySettings = new SlobViewer.Settings();
+      SpeechSettings = new Speech.SpeechSettings();
     }
+
+    public Settings(XmlReader tr)
+    {
+      LoadXml(tr);
+    }
+
+    public void SaveXml(XmlWriter tw)
+    {
+      tw.WriteStartElement("Settings");
+      tw.WriteAttributeString("Version", "1");
+
+      StartupSettings.SaveXml(tw);
+      BookSettings.SaveXml(tw);
+      DictionarySettings.SaveXml(tw);
+      SpeechSettings.SaveXml(tw);
+
+      tw.WriteEndElement(); // Settings
+    }
+
+    public void LoadXml(XmlReader tr)
+    {
+
+      var version = tr.GetAttribute("Version");
+      tr.ReadStartElement("Settings");
+
+      StartupSettings = new Gui.StartupSettings(tr);
+      BookSettings = new Book.BookSettings(tr);
+      DictionarySettings = new SlobViewer.Settings(tr);
+      SpeechSettings = new Speech.SpeechSettings(tr);
+
+      tr.ReadEndElement(); // Settings
+
+    }
+  }
 
 }

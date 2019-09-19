@@ -10,16 +10,16 @@ using System.Windows;
 
 namespace LediReader
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+  /// <summary>
+  /// Interaction logic for App.xaml
+  /// </summary>
+  public partial class App : Application
+  {
+    protected override void OnStartup(StartupEventArgs e)
     {
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            Gui.StartupSettings.StartupArguments = e.Args;
-            base.OnStartup(e);
-        }
-
+      Gui.StartupSettings.StartupArguments = e.Args;
+      base.OnStartup(e);
     }
+
+  }
 }

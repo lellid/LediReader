@@ -10,162 +10,162 @@ using System.Windows.Input;
 
 namespace LediReader.Gui
 {
-    /// <summary>
-    /// Interaction logic for DialogShellViewWpf.xaml
-    /// </summary>
-    public partial class DialogShellViewWpf : Window, IDialogShellView
+  /// <summary>
+  /// Interaction logic for DialogShellViewWpf.xaml
+  /// </summary>
+  public partial class DialogShellViewWpf : Window, IDialogShellView
+  {
+    private UIElement _hostedControl;
+    private Rect _workArea;
+
+    public DialogShellViewWpf()
     {
-        private UIElement _hostedControl;
-        private Rect _workArea;
-
-        public DialogShellViewWpf()
-        {
-            InitializeComponent();
-        }
-
-        public DialogShellViewWpf(System.Windows.UIElement hostedControl)
-          : this()
-        {
-            _hostedControl = hostedControl;
-            _hostedControl.SetValue(Grid.RowProperty, 0);
-            _hostedControl.SetValue(Grid.ColumnProperty, 0);
-            _grid.Children.Add(_hostedControl);
-        }
-
-        /// <summary>
-        /// Overrides the logic for determining the size of the dialog window. See remarks for details.
-        /// </summary>
-        /// <param name="availableSize"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// There are two changes from the default behaviour:
-        /// <para>(i) when the dialog is loaded, the size is adjusted so that it is not bigger than
-        /// the available working area on the screen. If the initial position of the dialog is chosen so that the right lower corner of the dialog would be outside
-        /// of the working area, it is adjusted so that it is inside the working area.</para>
-        /// <para>
-        /// If during the dialog is showed the size of the content changed, the dialog box size is adjusted so that the lower right corner of the dialog window would
-        /// always be inside the working area. This does not apply if the user had manually changed the size of the dialog box before.
-        /// </para>
-        ///
-        /// </remarks>
-        protected override Size MeasureOverride(Size availableSize)
-        {
-            _workArea = GetScreenInformation(Left, Top);
-
-            var thisWindowPresentationSource = PresentationSource.FromVisual(this);
-            var m = thisWindowPresentationSource.CompositionTarget.TransformToDevice;
-            var thisDpiWidthFactor = m.M11;
-            var thisDpiHeightFactor = m.M22;
-
-            // TODO is this working for arrangments of monitors with different dpi settings, too?
-            _workArea = new Rect(_workArea.X / thisDpiWidthFactor, _workArea.Y / thisDpiHeightFactor, _workArea.Width / thisDpiWidthFactor, _workArea.Height / thisDpiHeightFactor);
-
-            if (!IsLoaded) // when the dialog is initially loaded
-            {
-                // adjust the size of the dialog box so that is is maximum the size of the working area
-                if (availableSize.Height > _workArea.Height)
-                    availableSize.Height = _workArea.Height;
-                if (availableSize.Width > _workArea.Width)
-                    availableSize.Width = _workArea.Width;
-            }
-            else if (SizeToContent == System.Windows.SizeToContent.WidthAndHeight) // when the content size changed and the user had not manually resized the box
-            {
-                // adjust the size of the dialog box so that it fits inside of the working area (without changing the position of the dialog
-                if (Top + availableSize.Height > _workArea.Bottom)
-                    availableSize.Height = _workArea.Bottom - Top;
-                if (Left + availableSize.Width > _workArea.Right)
-                    availableSize.Width = _workArea.Right - Left;
-            }
-
-            if (availableSize.Height < 0)
-                availableSize.Height = 0;
-            if (availableSize.Width < 0)
-                availableSize.Width = 0;
-
-            return base.MeasureOverride(availableSize);
-        }
-
-        /// <summary>Override this method to arrange and size a window and its child elements.</summary>
-        /// <param name="arrangeBounds">A <see cref="T:System.Windows.Size"/> that reflects the final size that the window should use to arrange itself and its children.</param>
-        /// <returns>A <see cref="T:System.Windows.Size"/> that reflects the actual size that was used.</returns>
-        protected override Size ArrangeOverride(Size arrangeBounds)
-        {
-            if (!IsLoaded) // when the dialog is initially loaded
-            {
-                // adjust the top and left position of the dialog if neccessary so that the dialog box fits inside the working area
-                if (Top + arrangeBounds.Height > _workArea.Bottom)
-                    Top = _workArea.Bottom - arrangeBounds.Height;
-                if (Left + arrangeBounds.Width > _workArea.Right)
-                    Left = _workArea.Right - arrangeBounds.Width;
-            }
-
-            return base.ArrangeOverride(arrangeBounds);
-        }
-
-        #region IDialogShellView
-
-        public bool ApplyVisible
-        {
-            set
-            {
-                _btApply.Visibility = value ? Visibility.Visible : Visibility.Hidden;
-            }
-        }
-
-        public event Action<System.ComponentModel.CancelEventArgs> ButtonOKPressed;
-
-        public event Action ButtonCancelPressed;
-
-        public event Action ButtonApplyPressed;
-
-        #endregion IDialogShellView
-
-        #region Event handlers
-
-        private void EhButtonOKPressed(object sender, RoutedEventArgs e)
-        {
-            _btOk.Focus(); // Trick to drag the focus away from the embedded control in order to trigger its validation code <b>before</b> the controls Apply routine is called. (This is only needed if user pressed Enter on the keyboard).
-            var eventArgs = new System.ComponentModel.CancelEventArgs();
-            ButtonOKPressed?.Invoke(eventArgs);
-
-            if (!eventArgs.Cancel)
-            {
-                DialogResult = true;
-            }
-        }
-
-        private void EhButtonCancelPressed(object sender, RoutedEventArgs e)
-        {
-            ButtonCancelPressed?.Invoke();
-            DialogResult = false;
-        }
-
-        private void EhButtonApplyPressed(object sender, RoutedEventArgs e)
-        {
-            ButtonApplyPressed?.Invoke();
-        }
-
-        private void EhViewLoaded(object sender, RoutedEventArgs e)
-        {
-            _hostedControl.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
-        }
-
-        #endregion Event handlers
-
-        private void EhViewUnloaded(object sender, RoutedEventArgs e)
-        {
-            // remove all references to hostedControl
-            _grid.Children.Clear();
-            _hostedControl = null;
-        }
-
-        public Rect GetScreenInformation(double virtual_x, double virtual_y)
-        {
-            var wa = System.Windows.Forms.Screen.GetWorkingArea(new System.Drawing.Point((int)virtual_x, (int)virtual_y));
-
-            return new Rect(wa.X, wa.Y, wa.Width, wa.Height);
-        }
-
-
+      InitializeComponent();
     }
+
+    public DialogShellViewWpf(System.Windows.UIElement hostedControl)
+      : this()
+    {
+      _hostedControl = hostedControl;
+      _hostedControl.SetValue(Grid.RowProperty, 0);
+      _hostedControl.SetValue(Grid.ColumnProperty, 0);
+      _grid.Children.Add(_hostedControl);
+    }
+
+    /// <summary>
+    /// Overrides the logic for determining the size of the dialog window. See remarks for details.
+    /// </summary>
+    /// <param name="availableSize"></param>
+    /// <returns></returns>
+    /// <remarks>
+    /// There are two changes from the default behaviour:
+    /// <para>(i) when the dialog is loaded, the size is adjusted so that it is not bigger than
+    /// the available working area on the screen. If the initial position of the dialog is chosen so that the right lower corner of the dialog would be outside
+    /// of the working area, it is adjusted so that it is inside the working area.</para>
+    /// <para>
+    /// If during the dialog is showed the size of the content changed, the dialog box size is adjusted so that the lower right corner of the dialog window would
+    /// always be inside the working area. This does not apply if the user had manually changed the size of the dialog box before.
+    /// </para>
+    ///
+    /// </remarks>
+    protected override Size MeasureOverride(Size availableSize)
+    {
+      _workArea = GetScreenInformation(Left, Top);
+
+      var thisWindowPresentationSource = PresentationSource.FromVisual(this);
+      var m = thisWindowPresentationSource.CompositionTarget.TransformToDevice;
+      var thisDpiWidthFactor = m.M11;
+      var thisDpiHeightFactor = m.M22;
+
+      // TODO is this working for arrangments of monitors with different dpi settings, too?
+      _workArea = new Rect(_workArea.X / thisDpiWidthFactor, _workArea.Y / thisDpiHeightFactor, _workArea.Width / thisDpiWidthFactor, _workArea.Height / thisDpiHeightFactor);
+
+      if (!IsLoaded) // when the dialog is initially loaded
+      {
+        // adjust the size of the dialog box so that is is maximum the size of the working area
+        if (availableSize.Height > _workArea.Height)
+          availableSize.Height = _workArea.Height;
+        if (availableSize.Width > _workArea.Width)
+          availableSize.Width = _workArea.Width;
+      }
+      else if (SizeToContent == System.Windows.SizeToContent.WidthAndHeight) // when the content size changed and the user had not manually resized the box
+      {
+        // adjust the size of the dialog box so that it fits inside of the working area (without changing the position of the dialog
+        if (Top + availableSize.Height > _workArea.Bottom)
+          availableSize.Height = _workArea.Bottom - Top;
+        if (Left + availableSize.Width > _workArea.Right)
+          availableSize.Width = _workArea.Right - Left;
+      }
+
+      if (availableSize.Height < 0)
+        availableSize.Height = 0;
+      if (availableSize.Width < 0)
+        availableSize.Width = 0;
+
+      return base.MeasureOverride(availableSize);
+    }
+
+    /// <summary>Override this method to arrange and size a window and its child elements.</summary>
+    /// <param name="arrangeBounds">A <see cref="T:System.Windows.Size"/> that reflects the final size that the window should use to arrange itself and its children.</param>
+    /// <returns>A <see cref="T:System.Windows.Size"/> that reflects the actual size that was used.</returns>
+    protected override Size ArrangeOverride(Size arrangeBounds)
+    {
+      if (!IsLoaded) // when the dialog is initially loaded
+      {
+        // adjust the top and left position of the dialog if neccessary so that the dialog box fits inside the working area
+        if (Top + arrangeBounds.Height > _workArea.Bottom)
+          Top = _workArea.Bottom - arrangeBounds.Height;
+        if (Left + arrangeBounds.Width > _workArea.Right)
+          Left = _workArea.Right - arrangeBounds.Width;
+      }
+
+      return base.ArrangeOverride(arrangeBounds);
+    }
+
+    #region IDialogShellView
+
+    public bool ApplyVisible
+    {
+      set
+      {
+        _btApply.Visibility = value ? Visibility.Visible : Visibility.Hidden;
+      }
+    }
+
+    public event Action<System.ComponentModel.CancelEventArgs> ButtonOKPressed;
+
+    public event Action ButtonCancelPressed;
+
+    public event Action ButtonApplyPressed;
+
+    #endregion IDialogShellView
+
+    #region Event handlers
+
+    private void EhButtonOKPressed(object sender, RoutedEventArgs e)
+    {
+      _btOk.Focus(); // Trick to drag the focus away from the embedded control in order to trigger its validation code <b>before</b> the controls Apply routine is called. (This is only needed if user pressed Enter on the keyboard).
+      var eventArgs = new System.ComponentModel.CancelEventArgs();
+      ButtonOKPressed?.Invoke(eventArgs);
+
+      if (!eventArgs.Cancel)
+      {
+        DialogResult = true;
+      }
+    }
+
+    private void EhButtonCancelPressed(object sender, RoutedEventArgs e)
+    {
+      ButtonCancelPressed?.Invoke();
+      DialogResult = false;
+    }
+
+    private void EhButtonApplyPressed(object sender, RoutedEventArgs e)
+    {
+      ButtonApplyPressed?.Invoke();
+    }
+
+    private void EhViewLoaded(object sender, RoutedEventArgs e)
+    {
+      _hostedControl.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+    }
+
+    #endregion Event handlers
+
+    private void EhViewUnloaded(object sender, RoutedEventArgs e)
+    {
+      // remove all references to hostedControl
+      _grid.Children.Clear();
+      _hostedControl = null;
+    }
+
+    public Rect GetScreenInformation(double virtual_x, double virtual_y)
+    {
+      var wa = System.Windows.Forms.Screen.GetWorkingArea(new System.Drawing.Point((int)virtual_x, (int)virtual_y));
+
+      return new Rect(wa.X, wa.Y, wa.Width, wa.Height);
+    }
+
+
+  }
 }

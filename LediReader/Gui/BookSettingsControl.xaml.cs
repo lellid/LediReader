@@ -17,26 +17,26 @@ using System.Windows.Shapes;
 
 namespace LediReader.Gui
 {
-    /// <summary>
-    /// Interaction logic for BookSettingsControl.xaml
-    /// </summary>
-    public partial class BookSettingsControl : UserControl
+  /// <summary>
+  /// Interaction logic for BookSettingsControl.xaml
+  /// </summary>
+  public partial class BookSettingsControl : UserControl
+  {
+    public BookSettingsControl()
     {
-        public BookSettingsControl()
-        {
-            InitializeComponent();
+      InitializeComponent();
 
-            this.DataContext = new BookSettingsController();
-        }
-
-        public BookSettingsController Controller
-        {
-            get
-            {
-                return (BookSettingsController)(this.DataContext);
-            }
-        }
-
-
+      this.DataContext = new BookSettingsController();
     }
+
+    public BookSettingsController Controller
+    {
+      get
+      {
+        return (BookSettingsController)(this.DataContext);
+      }
+    }
+
+
+  }
 }

@@ -24,57 +24,57 @@ using System.Windows.Shapes;
 
 namespace SlobViewer.Gui
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class DictionaryControl : UserControl
+  /// <summary>
+  /// Interaction logic for MainWindow.xaml
+  /// </summary>
+  public partial class DictionaryControl : UserControl
+  {
+    public DictionaryController Controller { get; private set; } = new DictionaryController();
+
+
+    public DictionaryControl()
     {
-        public DictionaryController Controller { get; private set; } = new DictionaryController();
-
-
-        public DictionaryControl()
-        {
-            InitializeComponent();
-            this.DataContext = Controller;
-        }
-
-        /*
-        private void EhSearchTextChanged(object sender, TextChangedEventArgs e)
-        {
-            var searchText = ((TextBox)sender).Text;
-            Controller.ShowContentForKey(searchText);
-            Controller.UpdateBestMatches(searchText);
-        }
-        */
-
-        private void EhSearchSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (0 == Controller.SearchListLock)
-            {
-                if (e.AddedItems.Count > 0)
-                {
-                    var item = e.AddedItems[0];
-                    var s = (string)item;
-                    _guiSearchText.Text = s;
-                }
-            }
-
-            if (null != _guiSearchList.SelectedItem)
-                _guiSearchList.ScrollIntoView(_guiSearchList.SelectedItem);
-        }
-
-        private void EhBestMatchSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count > 0)
-            {
-                var s = (string)e.AddedItems[0];
-                Controller.ShowContentForKey(s);
-            }
-        }
-
-        private void EhHide(object sender, RoutedEventArgs e)
-        {
-            this.Visibility = Visibility.Hidden;
-        }
+      InitializeComponent();
+      this.DataContext = Controller;
     }
+
+    /*
+    private void EhSearchTextChanged(object sender, TextChangedEventArgs e)
+    {
+        var searchText = ((TextBox)sender).Text;
+        Controller.ShowContentForKey(searchText);
+        Controller.UpdateBestMatches(searchText);
+    }
+    */
+
+    private void EhSearchSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+      if (0 == Controller.SearchListLock)
+      {
+        if (e.AddedItems.Count > 0)
+        {
+          var item = e.AddedItems[0];
+          var s = (string)item;
+          _guiSearchText.Text = s;
+        }
+      }
+
+      if (null != _guiSearchList.SelectedItem)
+        _guiSearchList.ScrollIntoView(_guiSearchList.SelectedItem);
+    }
+
+    private void EhBestMatchSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+      if (e.AddedItems.Count > 0)
+      {
+        var s = (string)e.AddedItems[0];
+        Controller.ShowContentForKey(s);
+      }
+    }
+
+    private void EhHide(object sender, RoutedEventArgs e)
+    {
+      this.Visibility = Visibility.Hidden;
+    }
+  }
 }
