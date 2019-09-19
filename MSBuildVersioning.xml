@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Tokens>
+<!--  Remember: change the Upgrade code only if a really big change to the product has happened, and you want to allow to install this version side by side with an older version.  -->
+<Token Name="UPGRADECODE" Value="{BC592562-DABC-4A62-9B56-6F299C150029}"/>
+<Token Name="MAJORVERSION" Value="1"/>
+<Token Name="MINORVERSION" Value="0"/>
+</Tokens>
