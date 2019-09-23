@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Dr. Dirk Lellinger. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Speech.Synthesis;
 using System.Globalization;
 using System.Windows.Documents;
+using System.Linq;
 
 namespace LediReader.Speech
 {
@@ -78,16 +80,16 @@ namespace LediReader.Speech
 
     public override bool IsSpeechSynthesizingActive => null != _synthesizer && _synthesizer.State != SynthesizerState.Ready;
 
-    public VoiceInfo GetSpeechVoiceInfo()
+    public override IInstalledVoiceInfo GetCurrentVoice()
     {
       AttachSynthesizer();
-      return _synthesizer.Voice;
+      return new VoiceInfoWrapper_NetFramework(_synthesizer.Voice, true);
     }
 
-    public IEnumerable<InstalledVoice> GetInstalledVoices()
+    public override IEnumerable<IInstalledVoiceInfo> GetInstalledVoices()
     {
       AttachSynthesizer();
-      return _synthesizer.GetInstalledVoices();
+      return _synthesizer.GetInstalledVoices().Select(installedVoice => new VoiceInfoWrapper_NetFramework(installedVoice.VoiceInfo, installedVoice.Enabled));
     }
 
 
@@ -191,5 +193,29 @@ namespace LediReader.Speech
       return pbd;
     }
 
+  }
+
+  public class VoiceInfoWrapper_NetFramework : IInstalledVoiceInfo
+  {
+    VoiceInfo _voiceInfo;
+    bool _isEnabled;
+
+    public VoiceInfoWrapper_NetFramework(VoiceInfo voiceInfo, bool isEnabled)
+    {
+      _voiceInfo = voiceInfo;
+      _isEnabled = isEnabled;
+    }
+
+    public string Name => _voiceInfo.Name;
+
+    public string Culture => _voiceInfo.Culture.ToString();
+
+    public string Age => _voiceInfo.Age.ToString();
+
+    public string Gender => _voiceInfo.Gender.ToString();
+
+    public string Description => _voiceInfo.Description;
+
+    public bool IsEnabled => _isEnabled;
   }
 }

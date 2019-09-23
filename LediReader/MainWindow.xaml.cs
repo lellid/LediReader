@@ -26,7 +26,7 @@ namespace LediReader
   public partial class MainWindow : Window
   {
     public MainWindowController Controller { get; private set; }
-    SpeechWorker _speech;
+    SpeechWorkerBase _speech;
     public static StartupEventArgs StartupArguments { get; set; }
 
     /// <summary>
@@ -86,7 +86,12 @@ namespace LediReader
     private void EhLoaded(object sender, RoutedEventArgs e)
     {
       _guiMenuItem_IsInAudioMode.IsChecked = Controller.IsInAudioMode;
-      _speech = new SpeechWorker() { IsInDarkMode = Controller.IsBookInDarkMode };
+
+      if (SpeechWorker_Windows10.IsSupportedByThisComputer())
+        _speech = new SpeechWorker_Windows10() { IsInDarkMode = Controller.IsBookInDarkMode, Dispatcher = this.Dispatcher };
+      else
+        _speech = new SpeechWorker() { IsInDarkMode = Controller.IsBookInDarkMode };
+
       _speech.ApplySettings(Controller.Settings.SpeechSettings);
       _speech.SpeechCompleted += EhSpeechCompleted;
 

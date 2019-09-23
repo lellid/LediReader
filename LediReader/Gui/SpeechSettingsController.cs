@@ -8,12 +8,13 @@ using System.Linq;
 using System.Speech.Synthesis;
 using System.Text;
 using System.Threading.Tasks;
+using LediReader.Speech;
 
 namespace LediReader.Gui
 {
   public class SpeechSettingsController : INotifyPropertyChanged
   {
-    ObservableCollection<VoiceInfo> _voices = new ObservableCollection<VoiceInfo>();
+    ObservableCollection<IInstalledVoiceInfo> _voices = new ObservableCollection<IInstalledVoiceInfo>();
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -23,22 +24,22 @@ namespace LediReader.Gui
 
     }
 
-    Speech.SpeechWorker _speechWorker;
+    Speech.SpeechWorkerBase _speechWorker;
 
-    public Speech.SpeechWorker Synthesizer
+    public Speech.SpeechWorkerBase Synthesizer
     {
       set
       {
         if (null != value)
         {
           _speechWorker = value;
-          foreach (InstalledVoice voice in _speechWorker.GetInstalledVoices())
+          foreach (var voice in _speechWorker.GetInstalledVoices())
           {
-            _voices.Add(voice.VoiceInfo);
+            _voices.Add(voice);
           }
         }
 
-        SelectedVoice = _speechWorker.GetSpeechVoiceInfo();
+        SelectedVoice = _speechWorker.GetCurrentVoice();
         SpeakingRate = _speechWorker.SpeechRate;
         SpeakingVolume = _speechWorker.SpeechVolume;
       }
@@ -46,12 +47,12 @@ namespace LediReader.Gui
 
     #region Bindable properties
 
-    public IEnumerable<VoiceInfo> Voices => _voices;
+    public IEnumerable<IInstalledVoiceInfo> Voices => _voices;
 
 
-    VoiceInfo _selectedVoice;
+    IInstalledVoiceInfo _selectedVoice;
 
-    public VoiceInfo SelectedVoice
+    public IInstalledVoiceInfo SelectedVoice
     {
       get
       {
@@ -188,7 +189,7 @@ namespace LediReader.Gui
     public void Apply(Speech.SpeechSettings settings)
     {
       settings.SpeechVoice = this.SelectedVoice.Name;
-      settings.SpeechCulture = this.SelectedVoice.Culture.Name;
+      settings.SpeechCulture = this.SelectedVoice.Culture;
       settings.SpeechRate = (int)this.SpeakingRate;
       settings.SpeechVolume = (int)this.SpeakingVolume;
       settings.KeepDisplayOnDuringSpeech = this.KeepDisplayOn;
@@ -197,4 +198,10 @@ namespace LediReader.Gui
       settings.WorkingBackgroundColorLightMode = ColorConverter.ToRGBAIntFromGrayLevel((byte)this.GrayLevelLightMode);
     }
   }
+
+
+
+
+
+
 }
