@@ -269,6 +269,12 @@ namespace LediReader.Speech
     /// <returns>The last spoken text element.</returns>
     public abstract TextElement StopSpeech();
 
+
+    /// <summary>
+    /// Pauses the speech immediately without doing anything else.
+    /// </summary>
+    public abstract void PauseSpeech();
+
     /// <summary>
     /// Gets a value indicating whether speech synthesizing is currently active.
     /// </summary>

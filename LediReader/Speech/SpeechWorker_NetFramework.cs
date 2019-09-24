@@ -126,6 +126,11 @@ namespace LediReader.Speech
       return _lastSpokenElement;
     }
 
+    public override void PauseSpeech()
+    {
+      _synthesizer?.Pause();
+    }
+
 
 
     private void EhSpeakProgress(object sender, SpeakProgressEventArgs e)

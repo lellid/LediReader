@@ -546,10 +546,12 @@ namespace LediReader
       {
         if (_speech.IsSpeechSynthesizingActive)
         {
-          var te = _guiViewer.GetTextElementAtViewerPosition(e.GetPosition(_guiViewer));
+          var pos = e.GetPosition(_guiViewer);
+          _speech.PauseSpeech(); // firstly, we pause the speech only (if we stop, the next call will not find the text element)
+          var te = _guiViewer.GetTextElementAtViewerPosition(pos); // This call is very time consuming (up to some seconds (!))  TODO find something faster
+          _speech.StopSpeech(); // now we can stop speech completely
           if (te is Run run)
           {
-            _speech.StopSpeech();
             Action_ShowDictionary(run.Text);
             e.Handled = true;
           }

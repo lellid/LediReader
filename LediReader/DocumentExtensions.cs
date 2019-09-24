@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Dr. Dirk Lellinger. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
@@ -60,14 +61,15 @@ namespace LediReader
         int charsBeforePoint = rangeProvider.GetText(int.MaxValue).Length;
 
         // Find the pointer that corresponds to the TextPointer
-        var pointer = document.ContentStart.GetPositionAtOffset(charsBeforePoint);
+        var pointer = document.ContentStart.GetPositionAtOffset(charsBeforePoint); // this is only a first guess
 
         // Adjust for difference between "text offset" and actual number of characters before pointer
-        for (int i = 0; i < 10; i++)  // Limit to 10 adjustments
+        // Note that this is time consuming and can take some seconds (!) for big documents
+        for (int i = 0; i < 12; i++)  // Limit to 12 adjustments
         {
           int error = charsBeforePoint - new TextRange(document.ContentStart, pointer).Text.Length;
           if (error == 0) break;
-          pointer = pointer.GetPositionAtOffset(error);
+          pointer = pointer.GetPositionAtOffset(error); // try to get the pointer iteratively
         }
         return pointer;
       }

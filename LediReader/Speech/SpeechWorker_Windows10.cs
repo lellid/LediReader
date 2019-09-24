@@ -171,6 +171,11 @@ namespace LediReader.Speech
       return _lastSpokenElement;
     }
 
+    public override void PauseSpeech()
+    {
+      _mediaPlayer?.Pause();
+    }
+
     async void InternalStartSpeech(TextElement te)
     {
       var stb = ExtractText(te);
@@ -297,7 +302,7 @@ namespace LediReader.Speech
           // System.Diagnostics.Debug.WriteLine($"Cue text:[{cue.Text}], Access={Dispatcher.CheckAccess()}");
           Dispatcher.BeginInvoke(
             new Action<int>(EhSpeechProgress),
-            DispatcherPriority.Render,
+            DispatcherPriority.Background,
             cue.StartPositionInInput
             );
         }
@@ -310,22 +315,30 @@ namespace LediReader.Speech
     /// <param name="characterPosition">The character position in the string that is read-aloud.</param>
     void EhSpeechProgress(int characterPosition)
     {
+      var timeBeg = DateTime.UtcNow;
+
       var (textPos, textEle) = FindMarker(characterPosition);
 
       // System.Diagnostics.Debug.WriteLine($"SpeechProgress[{textPos}]");
 
-      if (null != _lastMarkedTextElement)
-      {
-        _lastMarkedTextElement.Background = _lastMarkedTextElementOriginalBackground;
-        _lastMarkedTextElementOriginalBackground = null;
-      }
+      var newTextElementToMark = GetTextElementToMark(textEle);
 
-      _lastMarkedTextElement = GetTextElementToMark(textEle);
-
-      if (null != _lastMarkedTextElement)
+      if (!object.ReferenceEquals(_lastMarkedTextElement, newTextElementToMark))
       {
-        _lastMarkedTextElementOriginalBackground = _lastMarkedTextElement.Background;
-        _lastMarkedTextElement.Background = _spanBackBrushInPlay;
+
+        if (null != _lastMarkedTextElement)
+        {
+          _lastMarkedTextElement.Background = _lastMarkedTextElementOriginalBackground;
+          _lastMarkedTextElementOriginalBackground = null;
+        }
+
+        _lastMarkedTextElement = newTextElementToMark;
+
+        if (null != _lastMarkedTextElement)
+        {
+          _lastMarkedTextElementOriginalBackground = _lastMarkedTextElement.Background;
+          _lastMarkedTextElement.Background = _spanBackBrushInPlay;
+        }
       }
 
       if (null != textEle)
