@@ -282,10 +282,26 @@ namespace SlobViewer.Gui
     /// collects the content found for this key, and finally shows the collected content in a FlowDocument.
     /// </summary>
     /// <param name="untrimmedSearchText">The untrimmed key.</param>
-    /// <param name="isInDarkMode">If true, the colors of the document are inverted.</param>
     public void ShowContentForUntrimmedKey(string untrimmedSearchText)
     {
-      SearchText = untrimmedSearchText.Trim(_wordTrimChars);
+      SearchText = TrimKeyString(untrimmedSearchText);
+    }
+
+    private string TrimKeyString(string untrimmedSearchText)
+    {
+      var idxStart = 0;
+      var idxEnd = untrimmedSearchText.Length - 1;
+
+      for (; idxEnd >= 0; --idxEnd)
+        if (char.IsLetterOrDigit(untrimmedSearchText[idxEnd]))
+          break;
+
+      for (; idxStart <= idxEnd; ++idxStart)
+        if (char.IsLetterOrDigit(untrimmedSearchText[idxStart]))
+          break;
+
+      return idxStart <= idxEnd ? untrimmedSearchText.Substring(idxStart, idxEnd - idxStart + 1) : string.Empty;
+
     }
 
     /// <summary>
