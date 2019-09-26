@@ -178,6 +178,11 @@ namespace LediReader.Speech
 
     async void InternalStartSpeech(TextElement te)
     {
+      if (_mediaPlayer is null || _synthesizer is null)
+      {
+        return;
+      }
+
       var stb = ExtractText(te);
       _flowDocument = GetParentDocument(te);
       if (null != _flowDocument)
@@ -185,6 +190,13 @@ namespace LediReader.Speech
         _flowDocument.Background = _documentBackBrushInPlay;
       }
       _nextStream = await _synthesizer.SynthesizeTextToStreamAsync(stb.ToString());
+
+      if (_mediaPlayer is null || _synthesizer is null) // during await the mediaPlayer could be stopped
+      {
+        _nextStream?.Dispose();
+        return;
+      }
+
       _nextSource = MediaSource.CreateFromStream(_nextStream, _nextStream.ContentType);
       _nextPBItem = new MediaPlaybackItem(_nextSource);
       RegisterForMarkEvents(_nextPBItem);
