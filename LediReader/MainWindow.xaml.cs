@@ -395,8 +395,7 @@ namespace LediReader
       if (dlg.ShowDialog() == true)
       {
         _guiViewer.GoToPage(control.Controller.PageNumber);
-        _lastTextElementConsidered = null;
-        _isInState_WaitForResumingSpeech = false;
+        QuitWaitingForResumingSpeech();
       }
     }
 
@@ -404,15 +403,23 @@ namespace LediReader
     {
       _speech.StopSpeech();
       _guiViewer.NextPage();
-      _lastTextElementConsidered = null;
-      _isInState_WaitForResumingSpeech = false;
+      QuitWaitingForResumingSpeech();
     }
 
     private void Action_GotoPreviousPage()
     {
       _speech.StopSpeech();
       _guiViewer.PreviousPage();
+      QuitWaitingForResumingSpeech();
+    }
+
+    private void QuitWaitingForResumingSpeech()
+    {
       _lastTextElementConsidered = null;
+      if (!_guiViewer.Selection.IsEmpty)
+      {
+        _guiViewer.Selection.Select(_guiViewer.Selection.Start, _guiViewer.Selection.Start);
+      }
       _isInState_WaitForResumingSpeech = false;
     }
 
@@ -448,7 +455,7 @@ namespace LediReader
       }
       else if (_isInState_WaitForResumingSpeech)
       {
-        _isInState_WaitForResumingSpeech = false;
+        QuitWaitingForResumingSpeech();
       }
       else if (Controller.IsInAudioMode && !_guiViewer.Selection.IsEmpty)
       {
