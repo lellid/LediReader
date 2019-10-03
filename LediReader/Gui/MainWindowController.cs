@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using VersOne.Epub;
 
-namespace LediReader
+namespace LediReader.Gui
 {
   public class MainWindowController : INotifyPropertyChanged
   {

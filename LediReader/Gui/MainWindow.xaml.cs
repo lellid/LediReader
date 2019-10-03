@@ -76,12 +76,22 @@ namespace LediReader.Gui
 
       InitializeComponent();
 
+#if DEBUG
+
+      var m = new MenuItem() { Header = "Inspect DOM" };
+      m.Click += EhInspectDOM;
+
+      _guiMenuSettings.Items.Add(m);
+#endif
+
       ApplyDarkTheme(Controller.Settings.BookSettings.IsBookInDarkMode, Controller.Settings.BookSettings.IsGuiInDarkMode, reRenderBook: false);
       Controller.IsInAudioMode = Controller.Settings.BookSettings.IsInAudioMode;
 
       this.DataContext = Controller;
       Loaded += EhLoaded;
     }
+
+
 
     private void EhLoaded(object sender, RoutedEventArgs e)
     {
@@ -610,6 +620,30 @@ namespace LediReader.Gui
     #endregion
 
 
+    #region Inspection of elements (debugging only)
+
+    private void EhInspectDOM(object sender, RoutedEventArgs e)
+    {
+      if (_guiViewer.Selection.Start?.Parent is FrameworkContentElement fce)
+      {
+        while (fce.Tag == null && fce.Parent is FrameworkContentElement)
+        {
+          fce = fce.Parent as FrameworkContentElement;
+        }
+        if (fce.Tag is HtmlToFlowDocument.Dom.TextElement textElement)
+        {
+          var control = new DomTreeInspectorControl();
+          var controller = control.Controller;
+          var root = HtmlToFlowDocument.Dom.TextElementExtensions.GetRootElement(textElement);
+          controller.DomRootElement = root;
+          controller.SelectedTextElement = textElement;
+          var dlg = new DialogShellViewWpf(control);
+          dlg.ShowDialog();
+        }
+      }
+    }
+
+    #endregion
 
     // https://stackoverflow.com/questions/2981884/how-can-i-get-a-textpointer-from-a-mouse-click-in-a-flowdocument
   }

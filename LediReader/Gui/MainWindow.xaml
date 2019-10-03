@@ -22,7 +22,7 @@
                 <MenuItem Header="_Open SLOB file" Click="EhOpenSlobFile" />
                 <MenuItem Header="Unload dictionary" x:Name="_guiUnloadMenuItem"/>
             </MenuItem>
-            <MenuItem Header="_Settings">
+            <MenuItem Header="_Settings" x:Name="_guiMenuSettings">
                 <MenuItem Header="Speech.." Click="EhSpeechSettings"/>
                 <MenuItem Header="Appearance.." Click="EhBookSettings"/>
                 <MenuItem Header="Register with .epub extension" Click="EhRegisterApplication"/>
