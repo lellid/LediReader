@@ -101,13 +101,16 @@ namespace LediReader
 
       HtmlToFlowDocument.Dom.FlowDocument document = null;
       Dictionary<string, string> fontDictionary = null;
+      bool wasNewBookOpened;
       if (null != Gui.StartupSettings.StartupArguments && Gui.StartupSettings.StartupArguments.Length > 0)
       {
         (document, fontDictionary) = Controller.OpenEbook(Gui.StartupSettings.StartupArguments[0]);
+        wasNewBookOpened = 0 != string.Compare(Gui.StartupSettings.StartupArguments[0], Controller.Settings.BookSettings.BookFileName, true);
       }
       else
       {
         (document, fontDictionary) = Controller.ReopenEbook();
+        wasNewBookOpened = false;
       }
 
 
@@ -116,7 +119,7 @@ namespace LediReader
       SlobViewer.Gui.GuiActions.UpdateUnloadSubmenus(_guiDictionary.Controller, _guiUnloadMenuItem);
 
       bool navigated = false;
-      if (Controller.Settings.BookSettings.Bookmark != null)
+      if (Controller.Settings.BookSettings.Bookmark != null && !wasNewBookOpened)
       {
         var flowDocument = (FlowDocument)_guiViewer.Document;
         var textElement = HtmlToFlowDocument.Rendering.WpfHelper.GetTextElementFromBookmark(flowDocument, Controller.Settings.BookSettings.Bookmark);
