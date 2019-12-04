@@ -178,6 +178,27 @@ namespace LediReader.Gui
 
       switch (te)
       {
+        case HtmlToFlowDocument.Dom.Image image:
+          if (null != image.Source)
+          {
+            stb.Append("Source: ");
+            stb.AppendLine(image.Source);
+          }
+
+          if (image.Width != null)
+          {
+            stb.Append("Width: ");
+            stb.Append(image.Width);
+            stb.AppendLine();
+          }
+
+          if (image.Height != null)
+          {
+            stb.Append("Height: ");
+            stb.Append(image.Height);
+            stb.AppendLine();
+          }
+          break;
         case HtmlToFlowDocument.Dom.Run run:
           stb.Append("Text: ");
           stb.AppendLine(run.Text);

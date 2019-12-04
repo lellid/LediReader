@@ -29,6 +29,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Gui\XHtmlTreeInspectorControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Gui\XHtmlTreeInspectorControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Themes\BookStylesDark.xaml">
       <SubType>Designer</SubType>
     </Page>

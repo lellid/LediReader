@@ -184,7 +184,7 @@ namespace LediReader.Gui
       {
         EpubTextContentFile cssFile;
         // calculate absolute name with reference to htmlFileNameReferencedFrom
-        var absoluteName = HtmlToFlowDocument.CssStylesheet.GetAbsoluteCssFileName(name, htmlFileNameReferencedFrom);
+        var absoluteName = HtmlToFlowDocument.CssStylesheets.GetAbsoluteFileNameForFileRelativeToHtmlFile(name, htmlFileNameReferencedFrom);
         if (cssFiles.TryGetValue(absoluteName, out cssFile))
           return cssFile.Content;
 
@@ -193,7 +193,7 @@ namespace LediReader.Gui
         {
           var idx = htmlFileNameReferencedFrom.LastIndexOf("/");
           htmlFileNameReferencedFrom = htmlFileNameReferencedFrom.Substring(0, idx - 1);
-          absoluteName = HtmlToFlowDocument.CssStylesheet.GetAbsoluteCssFileName(name, htmlFileNameReferencedFrom);
+          absoluteName = HtmlToFlowDocument.CssStylesheets.GetAbsoluteFileNameForFileRelativeToHtmlFile(name, htmlFileNameReferencedFrom);
           if (cssFiles.TryGetValue(absoluteName, out cssFile))
             return cssFile.Content;
         }

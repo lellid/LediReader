@@ -45,6 +45,12 @@ namespace LediReader.Gui
     /// </summary>
     bool _isInState_ShowingTheDictionary;
 
+
+    /// <summary>
+    /// The document page view visual component of the _guiViewer;
+    /// </summary>
+    System.Windows.Controls.Primitives.DocumentPageView _documentPageView;
+
     #region Startup and Closing
 
     public MainWindow()
@@ -77,10 +83,12 @@ namespace LediReader.Gui
       InitializeComponent();
 
 #if DEBUG
-
       var m = new MenuItem() { Header = "Inspect DOM" };
       m.Click += EhInspectDOM;
+      _guiMenuSettings.Items.Add(m);
 
+      m = new MenuItem { Header = "Inspect XHtml" };
+      m.Click += EhInspectXHtml;
       _guiMenuSettings.Items.Add(m);
 #endif
 
@@ -95,6 +103,9 @@ namespace LediReader.Gui
 
     private void EhLoaded(object sender, RoutedEventArgs e)
     {
+      SetupViewPortChangeSubscription();
+
+
       _guiMenuItem_IsInAudioMode.IsChecked = Controller.IsInAudioMode;
 
       if (SpeechWorker_Windows10.IsSupportedByThisComputer())
@@ -226,19 +237,196 @@ namespace LediReader.Gui
 
     #endregion Startup and Closing
 
+    #region Viewport caluclation
+
+    public class ViewPortProperties : System.ComponentModel.INotifyPropertyChanged
+    {
+      double _width = 800, _height = 600;
+
+      public event PropertyChangedEventHandler PropertyChanged;
+
+      public double Width
+      {
+        get
+        {
+          return _width;
+        }
+        set
+        {
+          if (!(_width == value))
+          {
+            _width = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Width)));
+          }
+        }
+      }
+      public double Height
+      {
+        get
+        {
+          return _height;
+        }
+        set
+        {
+          if (!(_height == value))
+          {
+            _height = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Height)));
+          }
+        }
+      }
+    }
+
+    ViewPortProperties _viewPortProperties = new ViewPortProperties();
+
+
+    /// <summary>
+    /// Setup the subscription to the events that follow a change in the document's viewport size.
+    /// </summary>
+    private void SetupViewPortChangeSubscription()
+    {
+      // Subscribe to change in ActualWidth, ActualHeight of the document page viewer, and Zoom of the _guiViewer
+
+      _documentPageView = FindVisualChildren<System.Windows.Controls.Primitives.DocumentPageView>(_guiViewer).FirstOrDefault();
+      if (null != _documentPageView)
+      {
+        var pd = DependencyPropertyDescriptor.FromProperty(FlowDocumentPageViewer.ActualWidthProperty, typeof(FrameworkElement));
+        pd.AddValueChanged(_documentPageView, EhDocumentPageView_ViewPortChanged);
+        pd = DependencyPropertyDescriptor.FromProperty(FlowDocumentPageViewer.ActualHeightProperty, typeof(FrameworkElement));
+        pd.AddValueChanged(_documentPageView, EhDocumentPageView_ViewPortChanged);
+      }
+      else
+      {
+        var pd = DependencyPropertyDescriptor.FromProperty(FlowDocumentPageViewer.ActualWidthProperty, typeof(FrameworkElement));
+        pd.AddValueChanged(_guiViewer, EhDocumentPageView_ViewPortChanged);
+        pd = DependencyPropertyDescriptor.FromProperty(FlowDocumentPageViewer.ActualHeightProperty, typeof(FrameworkElement));
+        pd.AddValueChanged(_guiViewer, EhDocumentPageView_ViewPortChanged);
+      }
+
+      {
+        // Setup subscription to Zoom...
+        var pd = DependencyPropertyDescriptor.FromProperty(FlowDocumentPageViewer.ZoomProperty, typeof(FlowDocumentPageViewer));
+        pd.AddValueChanged(_guiViewer, EhDocumentPageView_ViewPortChanged);
+      }
+    }
+
+
+
+    /// <summary>
+    /// Is called if the document's viewport has changed.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void EhDocumentPageView_ViewPortChanged(object sender, EventArgs e)
+    {
+      CalculateViewPortProperties();
+    }
+
+    /// <summary>
+    /// Calculates the size of the document's view port and stores the result in the member <see cref="_viewPortProperties"/>, in order
+    /// to be used by the bindings in the document's elements.
+    /// </summary>
+    private void CalculateViewPortProperties()
+    {
+      var flowDocument = _guiViewer.Document as FlowDocument;
+      var documentPadding = flowDocument.PagePadding;
+
+      if (null != _documentPageView)
+      {
+        if (_documentPageView.ActualWidth > 0 && _documentPageView.ActualHeight > 0)
+        {
+          var w = _documentPageView.ActualWidth;
+          if (documentPadding.Left > 0)
+            w -= documentPadding.Left;
+          if (documentPadding.Right > 0)
+            w -= documentPadding.Right;
+
+          var h = _documentPageView.ActualHeight;
+          if (documentPadding.Top > 0)
+            h -= documentPadding.Top;
+          if (documentPadding.Bottom > 0)
+            h -= documentPadding.Bottom;
+
+          /*
+          if (_viewPortProperties.Width != w || _viewPortProperties.Height != h)
+          {
+            System.Diagnostics.Debug.WriteLine($"AW={_documentPageView.ActualWidth}, AH={_documentPageView.ActualHeight}, Z={_guiViewer.Zoom}, w={w}, h={h}");
+          }
+          */
+
+          _viewPortProperties.Width = w * 100.0 / _guiViewer.Zoom;
+          _viewPortProperties.Height = h * 100.0 / _guiViewer.Zoom;
+        }
+      }
+      else
+      {
+        // Fall back method, if _documentPageView could not be found...
+        double toolBarHeight = 0;
+        var toolbarHost = FindVisualChildren<FrameworkElement>(_guiViewer).Where(x => x.Name == "PART_FindToolBarHost").FirstOrDefault();
+        if (null != toolbarHost)
+        {
+          // we need the parent of the toolbarhost
+          var toolbarHostParent = VisualTreeHelper.GetParent(toolbarHost) as FrameworkElement;
+          if (toolbarHostParent != null)
+            toolBarHeight = toolbarHostParent.ActualHeight;
+        }
+        _viewPortProperties.Width = (_guiViewer.ActualWidth - _guiViewer.Padding.Right - _guiViewer.Padding.Left) * 100.0 / _guiViewer.Zoom;
+        _viewPortProperties.Height = (_guiViewer.ActualHeight - _guiViewer.Padding.Top - _guiViewer.Padding.Bottom - toolBarHeight) * 100.0 / _guiViewer.Zoom;
+      }
+    }
+
+    /// <summary>
+    /// Helper class to enumerate all visual children of a given type of a parent element.
+    /// </summary>
+    /// <typeparam name="T">The type of children to return.</typeparam>
+    /// <param name="parent">The parent element.</param>
+    /// <returns>All visual children of the parent element of the given type.</returns>
+    public static IEnumerable<T> FindVisualChildren<T>(DependencyObject parent)
+        where T : DependencyObject
+    {
+      int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+      for (int i = 0; i < childrenCount; i++)
+      {
+        var child = VisualTreeHelper.GetChild(parent, i);
+        if (child is T tchild)
+          yield return tchild;
+
+        foreach (var other in FindVisualChildren<T>(child))
+        {
+          yield return other;
+        }
+      }
+    }
+
+    #endregion Viewport calculation
+
 
     private void ShowFlowDocument(HtmlToFlowDocument.Dom.FlowDocument flowDocument, Dictionary<string, string> fontDictionary)
     {
       if (null != flowDocument)
       {
         var renderer = new HtmlToFlowDocument.Rendering.WpfRenderer() { InvertColors = Controller.IsBookInDarkMode, AttachDomAsTags = true, FontDictionary = fontDictionary };
+        renderer.TemplateBindingViewportWidth = new Binding(nameof(ViewPortProperties.Width)) { Source = _viewPortProperties };
+        renderer.TemplateBindingViewportHeight = new Binding(nameof(ViewPortProperties.Height)) { Source = _viewPortProperties };
+
         var flowDocumentE = renderer.Render(flowDocument);
 
         flowDocumentE.IsColumnWidthFlexible = false;
 
-        var binding = new Binding("ActualWidth") { Source = _guiViewer };
-        flowDocumentE.SetBinding(FlowDocument.ColumnWidthProperty, binding); // Make sure the ColumnWidth property is same as the actual width of the flow document
+        // var binding1 = new Binding("ActualWidth") { Source = _guiViewer };
+        // flowDocumentE.SetBinding(FlowDocument.ColumnWidthProperty, binding1); // Make sure the ColumnWidth property is same as the actual width of the flow document
+
+        // Note: binding ActualHeight to PageHeight seems not a good idea,
+        // since the Zoom have to be taken into account. Otherwise zooming to increase font size will no longer work
+
         _guiViewer.Document = flowDocumentE;
+
+        flowDocumentE.ColumnWidth = double.MaxValue;
+        flowDocumentE.ColumnGap = 0; // ColumnWidth=infinity and columngap=0 are neccessary to span the text to a maximum width
+        flowDocumentE.PagePadding = new Thickness(8); // set page padding to zero instead of auto
+
+
+        CalculateViewPortProperties();
       }
       else
       {
@@ -641,6 +829,40 @@ namespace LediReader.Gui
           dlg.ShowDialog();
         }
       }
+    }
+
+    private void EhInspectXHtml(object sender, RoutedEventArgs e)
+    {
+      if (_guiViewer.Selection.Start?.Parent is FrameworkContentElement fce)
+      {
+        while ((!(fce.Tag is HtmlToFlowDocument.Dom.TextElement te) || !(te.Tag is System.Xml.XmlElement)) && fce.Parent is FrameworkContentElement)
+        {
+          fce = fce.Parent as FrameworkContentElement;
+        }
+
+        if (fce.Tag is HtmlToFlowDocument.Dom.TextElement textElement && textElement.Tag is System.Xml.XmlElement xe)
+        {
+          var control = new XHtmlTreeInspectorControl();
+          var controller = control.Controller;
+          var root = GetRootElement(xe);
+          controller.DomRootElement = root;
+          controller.SelectedTextElement = xe;
+          var dlg = new DialogShellViewWpf(control);
+          dlg.ShowDialog();
+        }
+      }
+    }
+
+    private static System.Xml.XmlNode GetRootElement(System.Xml.XmlNode te)
+    {
+      var result = te;
+
+      while (result.ParentNode != null)
+      {
+        result = result.ParentNode;
+      }
+
+      return result;
     }
 
     #endregion
