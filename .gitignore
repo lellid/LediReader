@@ -18,3 +18,4 @@ TestResults/
 *.shfbproj_*
 /packages
 *.log
+/LediReader/Properties/launchSettings.json
