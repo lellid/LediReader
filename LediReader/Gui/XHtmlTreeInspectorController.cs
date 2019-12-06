@@ -106,11 +106,66 @@ namespace LediReader.Gui
         }
       }
 
-      stb.AppendLine("Inner Html:");
-      stb.AppendLine(te.InnerText);
+      var innerXml = te.InnerXml;
+      var innerXmlTrimmed = innerXml.Trim();
+
+      if (!string.IsNullOrEmpty(innerXmlTrimmed))
+      {
+        stb.AppendLine("Inner Xml:");
+        stb.AppendLine(te.InnerXml);
+      }
+      else if (!string.IsNullOrEmpty(innerXml))
+      {
+        stb.AppendLine("Inner Xml:");
+        foreach (var c in innerXml)
+          WhiteSpaceToText(c, stb);
+        stb.AppendLine();
+      }
+      else // Inner Xml is empty
+      {
+        var innerText = te.InnerText;
+        var innerTextTrimmed = innerText.Trim();
+
+        if (!string.IsNullOrEmpty(innerTextTrimmed))
+        {
+          stb.AppendLine("Inner text:");
+          stb.AppendLine(te.InnerText);
+        }
+        else if (!string.IsNullOrEmpty(innerText))
+        {
+          stb.AppendLine("Inner text:");
+          foreach (var c in innerText)
+            WhiteSpaceToText(c, stb);
+          stb.AppendLine();
+        }
+        else
+        {
+          stb.AppendLine("(Both Inner Xml and Inner text are empty)");
+        }
+      }
 
 
       return stb.ToString();
     }
+
+    static void WhiteSpaceToText(char whitespace, StringBuilder stb)
+    {
+      switch (whitespace)
+      {
+        case ' ':
+          stb.Append("<space>");
+          break;
+        case '\t':
+          stb.Append("<tab>");
+          break;
+        case '\r':
+          stb.Append("<CR>");
+          break;
+        case '\n':
+          stb.Append("<LF>");
+          break;
+      }
+    }
+
   }
 }

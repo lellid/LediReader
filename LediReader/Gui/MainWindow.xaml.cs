@@ -848,6 +848,9 @@ namespace LediReader.Gui
           controller.DomRootElement = root;
           controller.SelectedTextElement = xe;
           var dlg = new DialogShellViewWpf(control);
+          if (root.Attributes != null && root.Attributes["OriginatedFromSource"] != null)
+            dlg.Title = root.Attributes["OriginatedFromSource"].Value;
+
           dlg.ShowDialog();
         }
       }
@@ -857,7 +860,7 @@ namespace LediReader.Gui
     {
       var result = te;
 
-      while (result.ParentNode != null)
+      while (result.ParentNode != null && !(result.ParentNode is System.Xml.XmlDocument))
       {
         result = result.ParentNode;
       }

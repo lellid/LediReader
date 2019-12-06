@@ -198,6 +198,20 @@ namespace LediReader.Gui
             stb.Append(image.Height);
             stb.AppendLine();
           }
+
+          if (image.MaxWidth != null)
+          {
+            stb.Append("MaxWidth: ");
+            stb.Append(image.MaxWidth);
+            stb.AppendLine();
+          }
+
+          if (image.MaxHeight != null)
+          {
+            stb.Append("MaxHeight: ");
+            stb.Append(image.MaxHeight);
+            stb.AppendLine();
+          }
           break;
         case HtmlToFlowDocument.Dom.Run run:
           stb.Append("Text: ");

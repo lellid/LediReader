@@ -55,6 +55,12 @@ namespace LediReader.Gui
       {
         var te = Controller.SelectedHierarchyOfInitiallySelectedItem[i];
         var item = containerGenerator.ContainerFromItem(te);
+
+        if (item is null)
+          System.Diagnostics.Debug.WriteLine($"Containergen returned null for type {te.GetType()} {te.LocalName}");
+        else
+          System.Diagnostics.Debug.WriteLine($"Containergen produced item for type {te.GetType()} {te.LocalName}");
+
         if (item is TreeViewItem treeViewItem && !treeViewItem.IsExpanded)
         {
           treeViewItem.ItemContainerGenerator.StatusChanged -= EhItemsContainer_Changed;
@@ -70,6 +76,8 @@ namespace LediReader.Gui
           }
         }
       }
+
+
     }
   }
 }

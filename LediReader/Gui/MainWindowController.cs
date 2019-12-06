@@ -212,7 +212,7 @@ namespace LediReader.Gui
       foreach (EpubTextContentFile htmlFile in htmlFiles.Values)
       {
         string htmlContent = htmlFile.Content;
-        var textElement = converter.Convert(htmlContent, false, GetStyleSheet, htmlFile.FileName); // create sections
+        var textElement = converter.ConvertXHtml(htmlContent, false, GetStyleSheet, htmlFile.FileName); // create sections
         flowDocument.AppendChild(textElement); // and add them to the flow document
       }
       Settings.BookSettings.BookFileName = fileName;

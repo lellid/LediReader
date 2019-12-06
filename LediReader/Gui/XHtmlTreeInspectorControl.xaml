@@ -16,12 +16,108 @@
         <TreeView x:Name="_guiTree" 
                   Grid.Column="0"
                   ItemsSource="{Binding Tree1stLevelElements}"
-                  DisplayMemberPath="LocalName"
                   SelectedItemChanged="EhSelectedItemChanged">
             <ItemsControl.Resources>
-                <HierarchicalDataTemplate  DataType="{x:Type treex:XmlText}" ItemsSource="{Binding Path=ChildNodes}">
+                <!-- see https://social.msdn.microsoft.com/Forums/sharepoint/en-US/4ad4b07f-e20c-4113-aefb-0d388e02df44/using-hierarchicaldatatemplates-datatype-to-handle-generic-xml-data-via-xmldataprovider?forum=wpf -->
+                <HierarchicalDataTemplate  DataType="a" ItemsSource="{Binding Path=ChildNodes}" >
                     <TextBlock Text="{Binding Name}"/>
                 </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="blockquote" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="body" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="code" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="div" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="em" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="h1" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="h2" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="h3" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="h4" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="h5" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="h6" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="h7" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="h8" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="head" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="html" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="img" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="li" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="ol" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="p" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="pre" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="span" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="strong" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="table" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="tbody" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="td" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="th" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="title" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="tr" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="ul" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="#text" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="#whitespace" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <DataTemplate  DataType="{x:Type treex:XmlText}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
             </ItemsControl.Resources>
         </TreeView>
 
