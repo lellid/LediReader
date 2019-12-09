@@ -31,6 +31,12 @@
                 <HierarchicalDataTemplate  DataType="code" ItemsSource="{Binding Path=ChildNodes}" >
                     <TextBlock Text="{Binding Name}"/>
                 </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="col" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate  DataType="colgroup" ItemsSource="{Binding Path=ChildNodes}" >
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate  DataType="div" ItemsSource="{Binding Path=ChildNodes}" >
                     <TextBlock Text="{Binding Name}"/>
                 </HierarchicalDataTemplate>
