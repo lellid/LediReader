@@ -16,8 +16,7 @@ namespace LediReader.Gui
     public Settings Settings { get; private set; }
 
     public EpubContent _bookContent;
-
-    InstanceStorageService _instanceStorageService;
+    private InstanceStorageService _instanceStorageService;
 
     public MainWindowController()
     {
@@ -28,7 +27,7 @@ namespace LediReader.Gui
 
     #region Bindable properties
 
-    bool _isBookInDarkMode;
+    private bool _isBookInDarkMode;
 
     public bool IsBookInDarkMode
     {
@@ -46,7 +45,7 @@ namespace LediReader.Gui
       }
     }
 
-    bool _isGuiInDarkMode;
+    private bool _isGuiInDarkMode;
 
     public bool IsGuiInDarkMode
     {
@@ -64,7 +63,7 @@ namespace LediReader.Gui
       }
     }
 
-    bool _isInAudioMode;
+    private bool _isInAudioMode;
 
     public bool IsInAudioMode
     {
@@ -158,6 +157,7 @@ namespace LediReader.Gui
 
       Dictionary<string, EpubTextContentFile> htmlFiles = _bookContent.Html;
       Dictionary<string, EpubTextContentFile> cssFiles = _bookContent.Css;
+      var readingOrder = epubBook.ReadingOrder;
 
       // ----------------- handle fonts ------------------------------
       var fontDictionary = new Dictionary<string, string>(); // Key is the font name, value is the absolute path to the font file
@@ -209,7 +209,7 @@ namespace LediReader.Gui
       // Entire HTML content of the book
       var converter = new HtmlToFlowDocument.Converter() { AttachSourceAsTags = true };
       var flowDocument = new HtmlToFlowDocument.Dom.FlowDocument();
-      foreach (EpubTextContentFile htmlFile in htmlFiles.Values)
+      foreach (EpubTextContentFile htmlFile in readingOrder)
       {
         string htmlContent = htmlFile.Content;
         var textElement = converter.ConvertXHtml(htmlContent, false, GetStyleSheet, htmlFile.FileName); // create sections
@@ -220,7 +220,7 @@ namespace LediReader.Gui
     }
 
     #region Image provider
-    ImageSource _imageProvider;
+    private ImageSource _imageProvider;
 
 
     public ImageSource ImageProvider
@@ -235,7 +235,7 @@ namespace LediReader.Gui
 
     public class ImageSource
     {
-      MainWindowController _contentManager;
+      private MainWindowController _contentManager;
 
       public ImageSource(MainWindowController contentManager)
       {
