@@ -34,7 +34,7 @@ namespace SlobViewer.Slob
     /// Reads from a SLOB file, and returns the read dictionary.
     /// </summary>
     /// <returns>The read dictionary.</returns>
-    public ISlobDictionary Read()
+    public IWordDictionary Read()
     {
 
       // for format details see

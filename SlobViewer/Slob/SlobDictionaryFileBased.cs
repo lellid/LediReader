@@ -12,7 +12,7 @@ namespace SlobViewer.Slob
   /// <summary>
   /// Represents a dictionary retrieved from a SLOB file.
   /// </summary>
-  public class SlobDictionaryFileBased : ISlobDictionary
+  public class SlobDictionaryFileBased : IWordDictionary
   {
     public string FileName { get; set; }
 

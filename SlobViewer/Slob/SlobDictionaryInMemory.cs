@@ -11,41 +11,41 @@ namespace SlobViewer.Slob
   /// <summary>
   /// Represents a dictionary retrieved from a SLOB file.
   /// </summary>
-  public class SlobDictionaryInMemory : ISlobDictionary
+  public class SlobDictionaryInMemory : IWordDictionary
   {
     public string FileName { get; set; }
 
     /// <summary>
     /// The encoding of the keys and the content.
     /// </summary>
-    System.Text.Encoding _encoding;
+    private System.Text.Encoding _encoding;
 
     /// <summary>
     /// The compression method of the content.
     /// </summary>
-    string _compression;
+    private string _compression;
 
     /// <summary>
     /// The dictionary of tags of this SLOB file. The tags represent metadata for the SLOB file.
     /// </summary>
-    Dictionary<string, string> _tags;
+    private Dictionary<string, string> _tags;
 
     /// <summary>
     /// The types of content. The <see cref="StoreItemInMemory"/>s contain a table which stores for each content item an index into this list of content types,
     /// so that each content item has a designated content type.
     /// </summary>
-    string[] _contentTypes;
+    private string[] _contentTypes;
 
     /// <summary>
     /// The list of keys of this dictionary.
     /// </summary>
-    Reference[] _references;
+    private Reference[] _references;
+
     /// <summary>
     /// The store items, i.e. the list of values. Each store item contains multiple values, in order to have a better compression factor of the content.
     /// </summary>
-    StoreItemInMemory[] _storeItems;
-
-    byte[] _buffer = new byte[256];
+    private StoreItemInMemory[] _storeItems;
+    private byte[] _buffer = new byte[256];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SlobDictionaryInMemory"/> class.

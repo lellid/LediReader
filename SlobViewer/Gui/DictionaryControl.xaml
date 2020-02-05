@@ -1,71 +1,89 @@
-﻿<UserControl x:Class="SlobViewer.Gui.DictionaryControl"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SlobViewer.Gui"
-        >
+﻿<UserControl
+    x:Class="SlobViewer.Gui.DictionaryControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:SlobViewer.Gui"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
     <UserControl.Resources>
         <local:FlowDocumentConverter x:Key="FlowDocumentConverter" />
     </UserControl.Resources>
     <Grid>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="4"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="4"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="4" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="4" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Background property of this BackgroundRectangle must be set with a global theme style either to white or black -->
-        <local:BackgroundRectangle Grid.Row="0" Grid.RowSpan="6" Grid.Column="0" Grid.ColumnSpan="3"/>
+        <!--  Background property of this BackgroundRectangle must be set with a global theme style either to white or black  -->
+        <local:BackgroundRectangle
+            Grid.Row="0"
+            Grid.RowSpan="6"
+            Grid.Column="0"
+            Grid.ColumnSpan="3" />
 
-        <TextBox x:Name="_guiSearchText" Grid.Row="0" Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <GridSplitter   Grid.Column="1" Grid.RowSpan="6" 
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Stretch"
-                        ShowsPreview="True" Width="20" />
+        <TextBox
+            x:Name="_guiSearchText"
+            Grid.Row="0"
+            Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        <GridSplitter
+            Grid.RowSpan="6"
+            Grid.Column="1"
+            Width="20"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Stretch"
+            ShowsPreview="True" />
 
-        <ListBox x:Name="_guiSearchList"
-                 Grid.Row="2"
-                 VirtualizingStackPanel.VirtualizationMode="Recycling"
-                 SelectionMode="Single"
-                 SelectionChanged="EhSearchSelectionChanged"
-                 SelectedValue="{Binding SelectedKeyInKeyList, Mode=TwoWay}"
-                 MaxHeight="1024"
-                 ItemsSource="{Binding KeyList}"
-                 >
-        </ListBox>
+        <ListBox
+            x:Name="_guiSearchList"
+            Grid.Row="2"
+            MaxHeight="1024"
+            ItemsSource="{Binding KeyList}"
+            SelectedValue="{Binding SelectedKeyInKeyList, Mode=TwoWay}"
+            SelectionChanged="EhSearchSelectionChanged"
+            SelectionMode="Single"
+            VirtualizingStackPanel.VirtualizationMode="Recycling" />
 
-        <ListBox x:Name="_guiBestMatchesList"
-                 Grid.Row="3" 
-                 VirtualizingStackPanel.VirtualizationMode="Recycling"
-                 SelectionMode="Single"
-                 SelectionChanged="EhBestMatchSelectionChanged"
-                 MaxHeight="1024"
-                 ItemsSource="{Binding BestMatchesList}"
-                 >
-        </ListBox>
+        <ListBox
+            x:Name="_guiBestMatchesList"
+            Grid.Row="3"
+            MaxHeight="1024"
+            ItemsSource="{Binding BestMatchesList}"
+            SelectionChanged="EhBestMatchSelectionChanged"
+            SelectionMode="Single"
+            VirtualizingStackPanel.VirtualizationMode="Recycling" />
 
 
-        <FlowDocumentScrollViewer 
+        <FlowDocumentScrollViewer
             x:Name="_guiFlowDocReader"
-            Grid.Row="0" Grid.RowSpan="4" Grid.Column="2">
+            Grid.Row="0"
+            Grid.RowSpan="4"
+            Grid.Column="2"
+            MouseDoubleClick="EhDocumentMouseDoubleClick">
             <FlowDocumentScrollViewer.Document>
                 <MultiBinding Converter="{StaticResource FlowDocumentConverter}">
-                    <Binding Path="FlowDocument"/>
-                    <Binding Path="IsInDarkMode"/>
+                    <Binding Path="FlowDocument" />
+                    <Binding Path="IsInDarkMode" />
                 </MultiBinding>
             </FlowDocumentScrollViewer.Document>
         </FlowDocumentScrollViewer>
 
-        <Button x:Name="_guiHideButton" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Content="Hide" Click="EhHide" Visibility="Collapsed"/>
+        <Button
+            x:Name="_guiHideButton"
+            Grid.Row="5"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Click="EhHide"
+            Content="Hide"
+            Visibility="Collapsed" />
     </Grid>
 </UserControl>

@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlobViewer.Slob
+namespace SlobViewer
 {
-  public interface ISlobDictionary
+  public interface IWordDictionary
   {
     string FileName { get; set; }
 

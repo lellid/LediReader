@@ -1,7 +1,5 @@
 ﻿// Copyright (c) Dr. Dirk Lellinger. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-using LediReader.Speech;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LediReader.Speech;
+using Microsoft.Win32;
 
 namespace LediReader.Gui
 {
@@ -26,30 +26,31 @@ namespace LediReader.Gui
   public partial class MainWindow : Window
   {
     public MainWindowController Controller { get; private set; }
-    SpeechWorkerBase _speech;
+
+    private SpeechWorkerBase _speech;
     public static StartupEventArgs StartupArguments { get; set; }
 
     /// <summary>
     /// The last text element that is somehow marked by the user. If the user turns a page, this element is set to null, in order to ensure that 
     /// this element is always on a page visible to the user.
     /// </summary>
-    TextElement _lastTextElementConsidered;
+    private TextElement _lastTextElementConsidered;
 
     /// <summary>
     /// True if speech is stopped, and the user has not yet scrolled to another page.
     /// </summary>
-    bool _isInState_WaitForResumingSpeech;
+    private bool _isInState_WaitForResumingSpeech;
 
     /// <summary>
     /// True if the dictionary page is currently shown on top.
     /// </summary>
-    bool _isInState_ShowingTheDictionary;
+    private bool _isInState_ShowingTheDictionary;
 
 
     /// <summary>
     /// The document page view visual component of the _guiViewer;
     /// </summary>
-    System.Windows.Controls.Primitives.DocumentPageView _documentPageView;
+    private System.Windows.Controls.Primitives.DocumentPageView _documentPageView;
 
     #region Startup and Closing
 
@@ -241,7 +242,7 @@ namespace LediReader.Gui
 
     public class ViewPortProperties : System.ComponentModel.INotifyPropertyChanged
     {
-      double _width = 800, _height = 600;
+      private double _width = 800, _height = 600;
 
       public event PropertyChangedEventHandler PropertyChanged;
 
@@ -277,7 +278,7 @@ namespace LediReader.Gui
       }
     }
 
-    ViewPortProperties _viewPortProperties = new ViewPortProperties();
+    private ViewPortProperties _viewPortProperties = new ViewPortProperties();
 
 
     /// <summary>
@@ -544,6 +545,12 @@ namespace LediReader.Gui
     private void EhOpenSlobFile(object sender, RoutedEventArgs e)
     {
       SlobViewer.Gui.GuiActions.OpenSlobFile(_guiDictionary.Controller, this);
+      SlobViewer.Gui.GuiActions.UpdateUnloadSubmenus(_guiDictionary.Controller, _guiUnloadMenuItem);
+    }
+
+    private void EhOpenStarDictFile(object sender, RoutedEventArgs e)
+    {
+      SlobViewer.Gui.GuiActions.OpenStarDictFile(_guiDictionary.Controller, this);
       SlobViewer.Gui.GuiActions.UpdateUnloadSubmenus(_guiDictionary.Controller, _guiUnloadMenuItem);
     }
 

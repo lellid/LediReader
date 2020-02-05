@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Dr. Dirk Lellinger. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-using SlobViewer.Slob;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using SlobViewer.Slob;
 
 namespace SlobViewer.Gui
 {
@@ -136,6 +136,30 @@ namespace SlobViewer.Gui
         InitialDirectory = dir.FullName,
       };
 
+
+      if (true == dlg.ShowDialog(mainWindow))
+      {
+        controller.LoadDictionary(dlg.FileName);
+      }
+    }
+
+    /// <summary>
+    /// Shows the file open dialog, and then imports a file in StarDict format. Such files can be downloaded from various sources.
+    /// </summary>
+    /// <param name="controller">The dictionary controller.</param>
+    /// <param name="mainWindow">The main window.</param>
+    public static void OpenStarDictFile(DictionaryController controller, Window mainWindow)
+    {
+      var entryDir = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+      var dir = new System.IO.DirectoryInfo(entryDir + @"\Content\");
+
+      var dlg = new Microsoft.Win32.OpenFileDialog
+      {
+        Filter = "StarDict dictionary files|*.ifo" +
+                      "|All Files|*.*",
+        Multiselect = false,
+        InitialDirectory = dir.FullName,
+      };
 
       if (true == dlg.ShowDialog(mainWindow))
       {

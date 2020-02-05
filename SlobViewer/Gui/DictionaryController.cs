@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Dr. Dirk Lellinger. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-using HtmlToFlowDocument.Dom;
-using SlobViewer.Common;
-using SlobViewer.Slob;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +10,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using HtmlToFlowDocument.Dom;
+using SlobViewer.Common;
+using SlobViewer.Slob;
 
 namespace SlobViewer.Gui
 {
@@ -22,23 +22,18 @@ namespace SlobViewer.Gui
   /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
   public class DictionaryController : System.ComponentModel.INotifyPropertyChanged
   {
-    Settings _settings = new Settings();
-
-    HtmlToFlowDocument.Converter _converter = new HtmlToFlowDocument.Converter();
+    private Settings _settings = new Settings();
+    private HtmlToFlowDocument.Converter _converter = new HtmlToFlowDocument.Converter();
 
     /// <summary>
     /// The currently loaded dictionaries.
     /// </summary>
-    List<ISlobDictionary> _dictionaries = new List<ISlobDictionary>();
-
-    SortKey[] _sortKeys;
-
-    CompareInfo _compareInfo;
-
-    Collections.Text.LongestCommonSubstringsOfStringAndStringArray _bestMatches = new Collections.Text.LongestCommonSubstringsOfStringAndStringArray().Preallocate(255, 255);
-    CancellationTokenSource _bestMatchesCancellationTokenSource = new CancellationTokenSource();
-
-    static readonly char[] _wordTrimChars = new char[] { ' ', '\t', '\r', '\n', ',', '.', '!', '?', ';', ':', '-', '+', '\"', '\'', '(', ')', '[', ']', '{', '}', '<', '>', '|', '=' };
+    private List<IWordDictionary> _dictionaries = new List<IWordDictionary>();
+    private SortKey[] _sortKeys;
+    private CompareInfo _compareInfo;
+    private Collections.Text.LongestCommonSubstringsOfStringAndStringArray _bestMatches = new Collections.Text.LongestCommonSubstringsOfStringAndStringArray().Preallocate(255, 255);
+    private CancellationTokenSource _bestMatchesCancellationTokenSource = new CancellationTokenSource();
+    private static readonly char[] _wordTrimChars = new char[] { ' ', '\t', '\r', '\n', ',', '.', '!', '?', ';', ':', '-', '+', '\"', '\'', '(', ')', '[', ']', '{', '}', '<', '>', '|', '=' };
 
 
     #region Bindable Properties
@@ -48,9 +43,8 @@ namespace SlobViewer.Gui
     /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
 
-    string[] _keys;
-
-    ObservableCollection<string> _keysColl;
+    private string[] _keys;
+    private ObservableCollection<string> _keysColl;
 
     /// <summary>
     /// Gets or sets the keys. This list contains the collected keys of all dictionaries currently loaded. Used for data binding to the key list.
@@ -74,7 +68,15 @@ namespace SlobViewer.Gui
       }
     }
 
-    string _selectedKeyInKeyList;
+    internal void Action_ShowSecondaryWord(string text)
+    {
+      if (!string.IsNullOrEmpty(text))
+      {
+        ShowContentForUntrimmedKey(text);
+      }
+    }
+
+    private string _selectedKeyInKeyList;
 
     /// <summary>
     /// Gets or sets the selected search text (used for binding to the search text TextBox).
@@ -119,7 +121,7 @@ namespace SlobViewer.Gui
       }
     }
 
-    FlowDocument _flowDocument;
+    private FlowDocument _flowDocument;
 
     /// <summary>
     /// Gets or sets the flow document (used for data binding to the FlowDocumentViewer).
@@ -143,7 +145,7 @@ namespace SlobViewer.Gui
       }
     }
 
-    string _searchText;
+    private string _searchText;
 
     /// <summary>
     /// Gets or sets the selected search text (used for binding to the search text TextBox).
@@ -169,7 +171,7 @@ namespace SlobViewer.Gui
       }
     }
 
-    bool _isInDarkMode;
+    private bool _isInDarkMode;
 
     public bool IsInDarkMode
     {
@@ -195,7 +197,7 @@ namespace SlobViewer.Gui
     /// <value>
     /// The currently loaded dictionaries.
     /// </value>
-    public IList<ISlobDictionary> Dictionaries { get { return _dictionaries; } }
+    public IList<IWordDictionary> Dictionaries { get { return _dictionaries; } }
 
 
     public void LoadDictionariesUsingSettings(Settings settings)
@@ -207,6 +209,8 @@ namespace SlobViewer.Gui
       }
     }
 
+
+
     /// <summary>
     /// Loads a Slob dictionary.
     /// </summary>
@@ -214,15 +218,37 @@ namespace SlobViewer.Gui
     /// <param name="collectKeys">If set to <c>true</c>, the keys of all dictionaries will be collected. When loading multiple dictionaries subsequently, you should set this parameter to true only for the last dictionary loaded.</param>
     public void LoadDictionary(string fileName, bool collectKeys = true)
     {
-      var slobReader = new SlobReaderWriter(fileName);
-      var dictionary = slobReader.Read();
-      dictionary.FileName = fileName;
+      var extension = System.IO.Path.GetExtension(fileName).ToLowerInvariant();
 
-      _dictionaries.Add(dictionary);
+      IWordDictionary dictionary = null;
 
-      if (collectKeys)
+      switch (extension)
       {
-        CollectAndSortKeys();
+        case ".ifo":
+          {
+            var starDict = new StarDict.StarDictionaryInMemory();
+            starDict.Open(fileName);
+            dictionary = starDict;
+          }
+          break;
+        case ".slob":
+          {
+            var slobReader = new SlobReaderWriter(fileName);
+            dictionary = slobReader.Read();
+            dictionary.FileName = fileName;
+          }
+          break;
+      }
+
+
+      if (null != dictionary)
+      {
+        _dictionaries.Add(dictionary);
+
+        if (collectKeys)
+        {
+          CollectAndSortKeys();
+        }
       }
     }
 
@@ -314,10 +340,10 @@ namespace SlobViewer.Gui
       if (string.IsNullOrEmpty(originalSearchText))
         return;
 
-      (ISlobDictionary Dictionary, string Content, string ContentId, string SearchText)? firstResult = null;
+      (IWordDictionary Dictionary, string Content, string ContentId, string SearchText)? firstResult = null;
 
-      var listDirect = new List<(ISlobDictionary Dictionary, string Content, string ContentId, string SearchText)>();
-      var listVerb = new List<(ISlobDictionary Dictionary, string Content, string ContentId, string SearchText)>();
+      var listDirect = new List<(IWordDictionary Dictionary, string Content, string ContentId, string SearchText)>();
+      var listVerb = new List<(IWordDictionary Dictionary, string Content, string ContentId, string SearchText)>();
 
       var originalSearchTexts = char.IsUpper(originalSearchText[0]) ? new[] { originalSearchText, originalSearchText.ToLowerInvariant() } : new[] { originalSearchText };
 
@@ -467,7 +493,7 @@ namespace SlobViewer.Gui
     /// <param name="dictionary">The dictionary. It is neccessary to retrieve CSS files referenced by the HTML content.</param>
     /// <param name="htmlContent">The HTML to convert.</param>
     /// <returns>A <see cref="Section"/> that represents the HTML content.</returns>
-    public Section ConvertHtmlContentToSection(ISlobDictionary dictionary, string htmlContent)
+    public Section ConvertHtmlContentToSection(IWordDictionary dictionary, string htmlContent)
     {
       Func<string, string, string> cssStyleSheetProvider = (cssFileName, refFileName) =>
       {
@@ -503,7 +529,7 @@ namespace SlobViewer.Gui
     /// <param name="dictionary">The dictionary.</param>
     /// <returns>A tuple consisting of the content, the content identifer, and a boolean. The boolean is true if the original search text was found in the dictionary.
     /// If the original search text was not found, the boolean is false, and <paramref name="searchText"/>contains the search text that was found.</returns>
-    private (string Content, string ContentId, bool foundOriginal) GetResult(ref string searchText, ISlobDictionary dictionary)
+    private (string Content, string ContentId, bool foundOriginal) GetResult(ref string searchText, IWordDictionary dictionary)
     {
       var searchKey = _compareInfo.GetSortKey(searchText);
       var index = Array.BinarySearch(_sortKeys, searchKey, new UnicodeStringSorter());
@@ -531,7 +557,7 @@ namespace SlobViewer.Gui
       return (result.Content, result.ContentId, found);
     }
 
-    public FlowDocument ShowContent(params (ISlobDictionary Dictionary, string ContentText, string ContentID, string SearchKey)[] contents)
+    public FlowDocument ShowContent(params (IWordDictionary Dictionary, string ContentText, string ContentID, string SearchKey)[] contents)
     {
       var doc = new FlowDocument();
 

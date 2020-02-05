@@ -1,7 +1,5 @@
 ﻿// Copyright (c) Dr. Dirk Lellinger. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-using SlobViewer.Common;
-using SlobViewer.Slob;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,6 +19,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using SlobViewer.Common;
+using SlobViewer.Slob;
 
 namespace SlobViewer.Gui
 {
@@ -75,6 +75,15 @@ namespace SlobViewer.Gui
     private void EhHide(object sender, RoutedEventArgs e)
     {
       this.Visibility = Visibility.Hidden;
+    }
+
+    private void EhDocumentMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+      var selection = _guiFlowDocReader.Selection;
+      if (!selection.IsEmpty)
+      {
+        Controller.Action_ShowSecondaryWord(selection.Text);
+      }
     }
   }
 }
