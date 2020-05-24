@@ -1,29 +1,30 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:ledi="clr-namespace:LediReader.Gui">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ledi="clr-namespace:LediReader.Gui">
 
     <Color x:Key="WindowBackgroundColorWhite">#FFFFFF</Color>
     <Color x:Key="WindowBackgroundColorBlack">#000000</Color>
 
-    <SolidColorBrush x:Key="WindowBackgroundBrushWhite" Color="{StaticResource WindowBackgroundColorWhite}"/>
-    <SolidColorBrush x:Key="WindowBackgroundBrushBlack" Color="{StaticResource WindowBackgroundColorBlack}"/>
+    <SolidColorBrush x:Key="WindowBackgroundBrushWhite" Color="{StaticResource WindowBackgroundColorWhite}" />
+    <SolidColorBrush x:Key="WindowBackgroundBrushBlack" Color="{StaticResource WindowBackgroundColorBlack}" />
 
-    <Style TargetType="{x:Type ledi:BackgroundRectangle}" xmlns:ledi="clr-namespace:LediReader.Gui">
-        <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}"/>
+    <Style xmlns:ledi="clr-namespace:LediReader.Gui" TargetType="{x:Type ledi:BackgroundRectangle}">
+        <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}" />
     </Style>
 
-    <Style TargetType="{x:Type slob:BackgroundRectangle}" xmlns:slob="clr-namespace:SlobViewer.Gui;assembly=SlobDictionary">
-        <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}"/>
+    <Style xmlns:slob="clr-namespace:SlobViewer.Gui;assembly=SlobDictionary" TargetType="{x:Type slob:BackgroundRectangle}">
+        <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}" />
     </Style>
 
     <Style TargetType="{x:Type FlowDocumentScrollViewer}">
-        <Setter Property="Foreground" Value="{StaticResource WindowBackgroundBrushBlack}"/>
-        <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}"/>
+        <Setter Property="Foreground" Value="{StaticResource WindowBackgroundBrushBlack}" />
+        <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}" />
     </Style>
 
     <Style TargetType="{x:Type FlowDocumentPageViewer}">
-        <Setter Property="Foreground" Value="{StaticResource WindowBackgroundBrushBlack}"/>
-        <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}"/>
+        <Setter Property="Foreground" Value="{StaticResource WindowBackgroundBrushBlack}" />
+        <Setter Property="Background" Value="{StaticResource WindowBackgroundBrushWhite}" />
     </Style>
 
 

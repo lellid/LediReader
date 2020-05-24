@@ -123,7 +123,7 @@ namespace LediReader.Gui
 
       HtmlToFlowDocument.Dom.FlowDocument document = null;
       Dictionary<string, string> fontDictionary = null;
-      bool wasNewBookOpened;
+      bool wasNewBookOpened = false;
       if (null != Gui.StartupSettings.StartupArguments && Gui.StartupSettings.StartupArguments.Length > 0)
       {
         (document, fontDictionary) = Controller.OpenEbook(Gui.StartupSettings.StartupArguments[0]);
@@ -131,8 +131,21 @@ namespace LediReader.Gui
       }
       else
       {
-        (document, fontDictionary) = Controller.ReopenEbook();
-        wasNewBookOpened = false;
+        try
+        {
+          (document, fontDictionary) = Controller.ReopenEbook();
+          wasNewBookOpened = false;
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show($"Could not re-open ebook {Controller.Settings.BookSettings.BookFileName}: {ex.Message}", "Error reopening ebook", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+      }
+
+      if (null == document)
+      {
+        document = new HtmlToFlowDocument.Dom.FlowDocument();
+        fontDictionary = new Dictionary<string, string>();
       }
 
 
@@ -873,6 +886,60 @@ namespace LediReader.Gui
       }
 
       return result;
+    }
+
+    private void EhTranslateByGoogle(object sender, RoutedEventArgs e)
+    {
+      var selection = _guiViewer.Selection;
+      if (selection.IsEmpty)
+        return;
+
+      var originalStart = selection.Start;
+      var originalEnd = selection.End;
+      var originalText = selection.Text;
+
+      var refStart = selection.Start.Paragraph.ContentStart;
+      var refEnd = selection.End.Paragraph.ContentEnd;
+
+      selection.Select(originalStart, refEnd);
+      var paraEndText = selection.Text;
+
+      selection.Select(refStart, refEnd);
+      var paraText = selection.Text;
+      _guiViewer.Selection.Select(originalStart, originalEnd);
+
+
+      int startOffset = 0, endOffset = paraText.Length - 1;
+      for (int i = paraText.Length - paraEndText.Length; i >= 0; --i)
+      {
+        var c = paraText[i];
+        if (c == '.' || c == '!' || c == '?')
+        {
+          startOffset = i + 1;
+          break;
+        }
+      }
+
+      for (int i = paraText.Length - paraEndText.Length + originalText.Length; i < paraText.Length; ++i)
+      {
+        var c = paraText[i];
+        if (c == '.' || c == '!' || c == '?')
+        {
+          endOffset = i;
+          break;
+        }
+      }
+
+      var searchText = paraText.Substring(startOffset, endOffset - startOffset + 1);
+
+
+      var url = "https://translate.google.com/#auto|de|" + searchText.Trim();
+      var psi = new System.Diagnostics.ProcessStartInfo
+      {
+        FileName = url,
+        UseShellExecute = true
+      };
+      System.Diagnostics.Process.Start(psi);
     }
 
     #endregion

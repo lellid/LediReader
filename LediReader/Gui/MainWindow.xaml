@@ -38,6 +38,7 @@
                 Click="EhChangeBetweenAudioAndReadingMode"
                 Header="In audio mode"
                 IsCheckable="True" />
+            <MenuItem Click="EhTranslateByGoogle" Header="Google translator" />
         </Menu>
         <ledi:BackgroundRectangle
             x:Name="_guiViewerBackground"
