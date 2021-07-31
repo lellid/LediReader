@@ -27,6 +27,7 @@
             <MenuItem x:Name="_guiMenuSettings" Header="_Settings">
                 <MenuItem Click="EhSpeechSettings" Header="Speech.." />
                 <MenuItem Click="EhBookSettings" Header="Appearance.." />
+                <MenuItem Click="EhTranslationSettings" Header="Translation settings.."/>
                 <MenuItem Click="EhRegisterApplication" Header="Register with .epub extension" />
                 <MenuItem Click="EhUnregisterApplication" Header="Unregister with .epub extension" />
             </MenuItem>
@@ -38,7 +39,7 @@
                 Click="EhChangeBetweenAudioAndReadingMode"
                 Header="In audio mode"
                 IsCheckable="True" />
-            <MenuItem Click="EhTranslateByGoogle" Header="Google translator" />
+            <MenuItem Click="EhTranslateExternal" Header="External translator" />
         </Menu>
         <ledi:BackgroundRectangle
             x:Name="_guiViewerBackground"
@@ -48,6 +49,7 @@
             x:Name="_guiViewer"
             Grid.Row="1"
             Margin="32,0,32,0"
+            MaxZoom="400"
             MouseDoubleClick="EhViewer_MouseDoubleClick"
             PreviewMouseDown="EhViewerMargin_PreviewMouseDown">
             <FlowDocument />

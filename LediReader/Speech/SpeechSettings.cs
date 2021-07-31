@@ -85,6 +85,8 @@ namespace LediReader.Speech
       KeepDisplayOnDuringSpeech = tr.ReadElementContentAsBoolean("KeepDisplayOnDuringSpeech", string.Empty);
       WorkingBackgroundColorDarkMode = XmlConvert.ToUInt32(tr.ReadElementContentAsString("WorkingBackgroundBlackTheme", string.Empty));
       WorkingBackgroundColorLightMode = XmlConvert.ToUInt32(tr.ReadElementContentAsString("WorkingBackgroundLightTheme", string.Empty));
+
+      tr.ReadEndElement(); // SpeechSettings
     }
   }
 

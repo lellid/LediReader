@@ -6,6 +6,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>LediReader.ico</ApplicationIcon>
       <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>latest</LangVersion>
 </PropertyGroup>
 
   <ItemGroup>

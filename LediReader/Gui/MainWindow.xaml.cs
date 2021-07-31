@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LediReader.Speech;
+using LediReader.Translation;
 using Microsoft.Win32;
 
 namespace LediReader.Gui
@@ -253,7 +255,7 @@ namespace LediReader.Gui
 
     #region Viewport caluclation
 
-    public class ViewPortProperties : System.ComponentModel.INotifyPropertyChanged
+    public class ViewPortProperties : INotifyPropertyChanged
     {
       private double _width = 800, _height = 600;
 
@@ -494,7 +496,7 @@ namespace LediReader.Gui
 
     private void EhOpenBook(object sender, RoutedEventArgs e)
     {
-      var dlg = new Microsoft.Win32.OpenFileDialog
+      var dlg = new OpenFileDialog
       {
         Filter = "Epub files|*.epub" +
                       "|All Files|*.*",
@@ -511,13 +513,13 @@ namespace LediReader.Gui
 
     private void EhSpeechSettings(object sender, RoutedEventArgs e)
     {
-      var controller = new Gui.SpeechSettingsController();
+      var controller = new SpeechSettingsController();
       controller.Initialize(Controller.Settings.SpeechSettings);
       controller.Synthesizer = _speech;
-      var control = new Gui.SpeechSettingsControl(controller);
+      var control = new SpeechSettingsControl(controller);
 
 
-      var window = new Gui.DialogShellViewWpf(control);
+      var window = new DialogShellViewWpf(control);
 
       if (true == window.ShowDialog())
       {
@@ -526,6 +528,20 @@ namespace LediReader.Gui
       }
     }
 
+
+    private void EhTranslationSettings(object sender, RoutedEventArgs e)
+    {
+      var controller = new TranslationSettingsController();
+      controller.Initialize(Controller.Settings.TranslationSettings);
+      var control = new TranslationSettingsControl() { DataContext = controller };
+
+      var window = new DialogShellViewWpf(control);
+
+      if (true == window.ShowDialog())
+      {
+        controller.Apply(Controller.Settings.TranslationSettings);
+      }
+    }
 
     private void EhViewer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
@@ -605,11 +621,11 @@ namespace LediReader.Gui
     private void Action_GotoPage()
     {
       _speech.StopSpeech();
-      var control = new Gui.GoToPageControl();
+      var control = new GoToPageControl();
       control.Controller.MaxPageNumber = _guiViewer.PageCount;
       control.Controller.PageNumber = _guiViewer.MasterPageNumber;
 
-      var dlg = new Gui.DialogShellViewWpf(control);
+      var dlg = new DialogShellViewWpf(control);
 
       dlg.ButtonApplyPressed += () => _guiViewer.GoToPage(control.Controller.PageNumber);
 
@@ -789,10 +805,10 @@ namespace LediReader.Gui
 
     private void EhBookSettings(object sender, RoutedEventArgs e)
     {
-      var control = new Gui.BookSettingsControl();
+      var control = new BookSettingsControl();
       var controller = control.Controller;
       controller.Initialize(this.Controller.Settings.BookSettings);
-      var dlg = new Gui.DialogShellViewWpf(control);
+      var dlg = new DialogShellViewWpf(control);
       if (true == dlg.ShowDialog())
       {
         controller.Apply(this.Controller.Settings.BookSettings);
@@ -888,7 +904,7 @@ namespace LediReader.Gui
       return result;
     }
 
-    private void EhTranslateByGoogle(object sender, RoutedEventArgs e)
+    private void EhTranslateExternal(object sender, RoutedEventArgs e)
     {
       var selection = _guiViewer.Selection;
       if (selection.IsEmpty)
@@ -932,8 +948,16 @@ namespace LediReader.Gui
 
       var searchText = paraText.Substring(startOffset, endOffset - startOffset + 1);
 
+      var isoLanguage = Controller.Settings.TranslationSettings.DestinationLanguageThreeLetterISOLanguageName;
+      var culture = CultureInfo.GetCultures(CultureTypes.NeutralCultures).FirstOrDefault(c => c.ThreeLetterISOLanguageName == isoLanguage) ?? CultureInfo.DefaultThreadCurrentUICulture;
 
-      var url = "https://translate.google.com/#auto|de|" + searchText.Trim();
+      string url = Controller.Settings.TranslationSettings.TranslationServiceProvider switch
+      {
+        TranslationServiceProvider.Google => $"https://translate.google.com/#auto|{culture.TwoLetterISOLanguageName}|{searchText.Trim()}",
+        TranslationServiceProvider.DeepL => $"https://www.deepl.com/translator#auto/{culture.TwoLetterISOLanguageName}/{searchText.Trim()}",
+        _ => throw new NotImplementedException($"ServiceProvider {Controller.Settings.TranslationSettings.TranslationServiceProvider} is not implemented yet!")
+      };
+
       var psi = new System.Diagnostics.ProcessStartInfo
       {
         FileName = url,
@@ -941,6 +965,8 @@ namespace LediReader.Gui
       };
       System.Diagnostics.Process.Start(psi);
     }
+
+   
 
     #endregion
 
