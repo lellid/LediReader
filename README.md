@@ -168,11 +168,10 @@ in Visual Studio.
 
 ## Known problems
 
-After using the read-aloud function for about 20 pages, you will hear a crackling in the audio output.
+Using Windows 7, after using the read-aloud function for about 20 pages, you will hear a crackling in the audio output.
 This is due to a memory leak that is known to Microsoft since the year 2010. (Congratulations, Microsoft!).
 See for instance [this post](https://social.microsoft.com/Forums/en-US/ee7bd34f-20c2-4a75-9d5a-a0c5e7f1a9b2/memory-leak-with-speechsynthesizer-please-help?forum=Offtopic) and [this post](https://stackoverflow.com/questions/10707187/memory-leak-in-net-speech-synthesizer).
 Stopping and restarting speech will not help. Instead, you need to close LediReader and
 open it again.
 
-I'm working on this problem now, and try to use Windows 10 speech synthesis directly, using the 
-Windows 10 UWP APIs. This will of course only get rid of the problem under Windows 10.
+With Windows 10, this problem has disappeared,  since the speech synthesis uses the Windows 10 UWP API.
