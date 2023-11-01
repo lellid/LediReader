@@ -1,11 +1,7 @@
 ﻿// Copyright (c) Dr. Dirk Lellinger. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using SlobViewer.Slob;
@@ -116,6 +112,58 @@ namespace SlobViewer.Gui
       }
     }
 
+    /// <summary>
+    /// Shows the file open dialog, and then imports a file coming from the Kaikki initiative (see <see href="https://kaikki.org"/>.
+    /// This are .json files.
+    /// Then a file save dialog is presented to store the imported data in the Slob format.
+    /// </summary>
+    /// <param name="controller">The dictionary controller.</param>
+    /// <param name="mainWindow">The main window.</param>
+    public static void ImportKaikkiFile(DictionaryController controller, Window mainWindow)
+    {
+      var entryDir = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+      var dir = new System.IO.DirectoryInfo(entryDir + @"\Content\");
+
+      var dlg = new Microsoft.Win32.OpenFileDialog
+      {
+        Filter = "Json files|*.json" +
+                      "|All Files|*.*",
+        Multiselect = false,
+        InitialDirectory = dir.FullName,
+        Title = "Import a Json file from Kaikki.org"
+      };
+
+      if (true == dlg.ShowDialog(mainWindow))
+      {
+        var reader = new Kaikki.KaikkiReader(dlg.FileName);
+        var jsonDictionary = reader.Read();
+        var domNodes = new Kaikki.DomBuilder().BuildDom(jsonDictionary);
+        var xhtmlConverter = new Kaikki.XHtmlWriter();
+        var xhtmlDictionary = new Dictionary<string, string>();
+        foreach (var node in domNodes)
+        {
+          xhtmlDictionary[node.Name] = xhtmlConverter.GetXHtml(node, true);
+        }
+
+        var saveDlg = new Microsoft.Win32.SaveFileDialog
+        {
+          Filter = "SLOB files|*.slob" +
+                    "|All Files|*.*",
+
+          InitialDirectory = dir.FullName,
+
+          Title = "Save dictionary as .slob file"
+        };
+
+        if (true == saveDlg.ShowDialog(mainWindow))
+        {
+          var slobWriter = new SlobReaderWriter(saveDlg.FileName);
+          slobWriter.Write(xhtmlDictionary, "text/xhtml");
+
+          controller.LoadDictionary(saveDlg.FileName);
+        }
+      }
+    }
 
     /// <summary>
     /// Shows the file open dialog, and then imports a file in .slob format. Such files can be downloaded from various sources, e.g. from <see href="https://github.com/itkach/slob/wiki/Dictionaries"/>

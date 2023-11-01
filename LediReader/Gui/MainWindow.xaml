@@ -20,7 +20,8 @@
             <MenuItem Header="_Dictionary">
                 <MenuItem Click="EhImportTeiFile" Header="_Import TEI file" />
                 <MenuItem Click="EhImportTUChemnitzFile" Header="_Import TU Chemnitz file" />
-                <MenuItem Click="EhOpenSlobFile" Header="_Open SLOB file" />
+                <MenuItem Click="EhImportKaikkiFile" Header="Import .json file from kaikki.org" />
+        <MenuItem Click="EhOpenSlobFile" Header="_Open SLOB file" />
                 <MenuItem Click="EhOpenStarDictFile" Header="Open _StarDict file" />
                 <MenuItem x:Name="_guiUnloadMenuItem" Header="Unload dictionary" />
             </MenuItem>

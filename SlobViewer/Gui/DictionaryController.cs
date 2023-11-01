@@ -7,9 +7,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using HtmlToFlowDocument.Dom;
 using SlobViewer.Common;
 using SlobViewer.Slob;
@@ -523,6 +521,42 @@ namespace SlobViewer.Gui
     }
 
     /// <summary>
+    /// Converts HTML content returned by a dictionary to a <see cref="Section"/>.
+    /// </summary>
+    /// <param name="dictionary">The dictionary. It is neccessary to retrieve CSS files referenced by the HTML content.</param>
+    /// <param name="htmlContent">The HTML to convert.</param>
+    /// <returns>A <see cref="Section"/> that represents the HTML content.</returns>
+    public Section ConvertXHtmlContentToSection(IWordDictionary dictionary, string htmlContent)
+    {
+      Func<string, string, string> cssStyleSheetProvider = (cssFileName, refFileName) =>
+      {
+        if (dictionary.TryGetValue(cssFileName, out var entry))
+        {
+          return entry.Content;
+        }
+        else
+        {
+          return null;
+        }
+      };
+
+      try
+      {
+        var section = (Section)_converter.ConvertXHtml(htmlContent, false, cssStyleSheetProvider, null);
+        return section;
+      }
+      catch (Exception ex)
+      {
+
+      }
+
+
+      return null;
+
+    }
+
+
+    /// <summary>
     /// Tries to find the key <paramref name="searchText"/> in the dictionary.
     /// </summary>
     /// <param name="searchText">The text to search. If this original text was not found, on return, the parameter contains the key for which the content is returned.</param>
@@ -569,6 +603,13 @@ namespace SlobViewer.Gui
         if (ContentID.StartsWith("text/html"))
         {
           var section = ConvertHtmlContentToSection(Dictionary, ContentText);
+          if (null != section)
+            doc.AppendChild(section);
+
+        }
+        if (ContentID.StartsWith("text/xhtml"))
+        {
+          var section = ConvertXHtmlContentToSection(Dictionary, ContentText);
           if (null != section)
             doc.AppendChild(section);
 
