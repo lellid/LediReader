@@ -1,4 +1,4 @@
-# LediReader
+﻿# LediReader
 
 LediReader is a WPF application to read ebooks in the .epub format. It is especially
 suited for people like me, who like to read ebooks in a foreign language (needing a dictionary) and want to have them
@@ -39,7 +39,7 @@ that is used in LediReader.
 ## Requirements
 
 LediReader works with Windows 7-SP1 and above.
-The .NET framework 4.7.1 or above is required.
+The .NET framework 4.8 or above is required.
 Some functions (e.g. keeping the display switched on during speech synthesis) will require Windows 10 1903 or above.
 
 ## Installation
@@ -101,7 +101,7 @@ to go to the previous / the next page.
 - Stop speech synthesis by clicking or touching the left margin of the application window.
 
 
-## Downloading and opening dictionaries already in the .slob format
+## Downloading and opening dictionaries that are already in the .slob format
 
 There are some dictionaries out there that are already in the .slob format. For example,
 have a look [here](https://github.com/itkach/slob/wiki/Dictionaries).
@@ -122,14 +122,14 @@ have a look [here](https://github.com/itkach/slob/wiki/Dictionaries).
 
 ## Importing dictionaries from other formats than .slob
 
-Currently, LediReader can import:
+Currently, LediReader can import, and then convert to .slob format:
 
 1. TEI XML files from the [FreeDict initiative](https://freedict.org/). Go to
 the [GitHub repository of the dictionaries](https://github.com/freedict/fd-dictionaries).
 There are subdirectories for many language combinations. Go into the subdirectory
 of your choice and search for the file with the extension .tei. Right click on this
 file and choose "Save destination as.." to save the file onto your local computer.
-Now switch back to LediReader, choose from the main menu `Dictionary -> Import TEI file..`.
+Now switch back to LediReader, choose from the main menu `Dictionary`→`Import TEI file..`.
 Select in the file browser the .tei file you just downloaded. The .tei file
 is converted into a .slob file, which you then have to save. The file is now
 loaded into LediReader and is used as a source for the dictionary view.
@@ -137,18 +137,31 @@ loaded into LediReader and is used as a source for the dictionary view.
 2. Plain text files. If you look for a good English-German dictionary,
 there is a good source at the Technical University of Chemnitz. At the time of writing,
 the dictionary could be found [in this FTP directory](https://ftp.tu-chemnitz.de/pub/Local/urz/ding/de-en/).
-The name of the file is `de-en.txt`. As described above, right-click on the file,
-select `Save destination as..` and save the text file on your local PC.
-Now switch back to LediReader, choose from the main menu `Dictionary -> Import TU Chemnitz file..`.
+The name of the file is `de-en.txt,zip`. As described above, right-click on the file,
+select `Save destination as..` and save the text file on your local PC. Unzip it so that you
+get the file `de-en.txt`.
+Now switch back to LediReader, choose from the main menu `Dictionary`→`Import TU Chemnitz file..`.
 Select in the file browser the .tei file you just downloaded. The .tei file
 is converted into a .slob file, which you then have to save. The file is now
 loaded into LediReader and is used as a source for the dictionary view.
+
+3. Json files of Wiktionary content, which can be found on [Kaikki](https://kaikki.org/).
+The dictionaries you can find there are very comprehensive, so it is worth having
+a look! One warning: please do the following steps on a PC (not necessarily your reading device)
+which has at least 8 GB of RAM; the conversion process is demanding a lot of resources.
+First download one of the dictionaries (.json files) from [Kaikki](https://kaikki.org/). Depending on the language, these are big files. For example, the Spanish word senses have 614 MB).
+Then open LediReader, choose menu `Dictionary`→`Import .json file from kaikki.org`, and choose the just downloaded
+.json file. Then, after some time (patience is required), a file save dialog opens, in which you can store
+the dictionary as a .slob file in dictionary format. The file is now loaded into LediReader and is used as a source
+for the dictionary view. If you usually read onto another device, just copy the .slob file to this device,
+open LediReader on this device, and load the .slob file by `Dictionary`→`Open SLOB file`.
+
 
 
 
 ## Building LediReader from the sources
 
-To build the LediReader application from the sources, you will need Microsoft Visual Studio 2019.
+To build the LediReader application from the sources, you will need Microsoft Visual Studio 2022.
 The 'Community edition' is sufficient.
 
 Clone the source to your PC, using something like
