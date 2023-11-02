@@ -144,7 +144,7 @@ namespace SlobViewer.Kaikki
       var formOfObj = senseObj["form_of"];
       if (formOfObj is JsonArray formOfArr)
       {
-        dstSense.Form_Of = formOfArr.Select(x => x.ToString()).ToArray();
+        dstSense.Form_Of = Build_Form_Of(formOfArr);
       }
       else if (formOfObj is not null)
       {
@@ -273,6 +273,12 @@ namespace SlobViewer.Kaikki
     private string? BuildRelated(JsonNode relatedObj)
     {
       return relatedObj["word"]?.ToString();
+    }
+
+    private string[] Build_Form_Of(JsonArray jsonArray)
+    {
+      // the Json array may consist of JsonNodes, with word as tag
+      return jsonArray.Select(x => (x is JsonNode node ? node["word"]?.ToString() : x?.ToString()) ?? string.Empty).ToArray();
     }
   }
 }
