@@ -536,7 +536,7 @@ namespace SlobViewer.Gui
         }
         else
         {
-          return null;
+          return DefaultStyleSheet;
         }
       };
 
@@ -554,6 +554,35 @@ namespace SlobViewer.Gui
       return null;
 
     }
+
+    const string DefaultStyleSheet =
+    """
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    h1 {
+      font-size: 24px;
+      margin-bottom: 2px;
+    }
+    
+    h2 {
+      font-size: 20px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    
+    h3 {
+      font-size: 17px;
+      margin-bottom: 7px;
+    }
+    
+    p {
+      font-size: 14px;
+    }
+    """;
 
 
     /// <summary>
