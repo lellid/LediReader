@@ -137,7 +137,7 @@ namespace SlobViewer.Gui
       {
         var reader = new Kaikki.KaikkiReader(dlg.FileName);
         var jsonDictionary = reader.Read();
-        var domNodes = new Kaikki.DomBuilder().BuildDom(jsonDictionary);
+        var domNodes = new Kaikki.DomBuilder().BuildDom(jsonDictionary, destroyDictionary: true);
         jsonDictionary = null; // no longer needed, we need to save memory
         System.GC.Collect();
         var xhtmlConverter = new Kaikki.XHtmlWriter();

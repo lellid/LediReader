@@ -9,12 +9,17 @@ namespace SlobViewer.Kaikki
   public class DomBuilder
   {
 
-    public List<Word> BuildDom(Dictionary<string, List<JsonNode>> allWords)
+    public List<Word> BuildDom(Dictionary<string, List<JsonNode>> allWords, bool destroyDictionary)
     {
       var result = new List<Word>();
-      foreach (var wordEntry in allWords)
+      var keys = allWords.Keys.ToArray();
+      foreach (var key in keys)
       {
-        var dstWord = BuildWord(wordEntry.Key, wordEntry.Value);
+        var dstWord = BuildWord(key, allWords[key]);
+        if (destroyDictionary)
+        {
+          allWords.Remove(key);
+        }
         result.Add(dstWord);
       }
       return result;
