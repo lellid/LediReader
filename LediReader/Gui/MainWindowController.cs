@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Text;
 using VersOne.Epub;
 
 namespace LediReader.Gui
@@ -151,12 +150,11 @@ namespace LediReader.Gui
 
     public (HtmlToFlowDocument.Dom.FlowDocument Document, Dictionary<string, string> FontDictionary) OpenEbook(string fileName)
     {
-
       var epubBook = EpubReader.ReadBook(fileName);
       _bookContent = epubBook.Content;
 
-      Dictionary<string, EpubTextContentFile> htmlFiles = _bookContent.Html;
-      Dictionary<string, EpubTextContentFile> cssFiles = _bookContent.Css;
+      var htmlFiles = _bookContent.Html;
+      var cssFiles = _bookContent.Css;
       var readingOrder = epubBook.ReadingOrder;
 
       // ----------------- handle fonts ------------------------------
@@ -164,16 +162,15 @@ namespace LediReader.Gui
       var fontPath = Path.Combine(_instanceStorageService.InstanceStoragePath, "Fonts");
       Directory.CreateDirectory(fontPath);
 
-      foreach (var entry in _bookContent.Fonts)
+      foreach (var entry in _bookContent.Fonts.Local)
       {
         var fontName = entry.Key;
-        var bytes = entry.Value;
-        var fontFileName = Path.GetFileName(entry.Value.FileName);
+        var bytes = entry.Content;
+        var fontFileName = Path.GetFileName(entry.FilePath);
         fontFileName = Path.Combine(fontPath, fontFileName);
         using (var stream = new FileStream(fontFileName, FileMode.Create, FileAccess.Write, FileShare.None))
         {
-          var byteArray = bytes.Content;
-          stream.Write(byteArray, 0, byteArray.Length);
+          stream.Write(bytes, 0, bytes.Length);
         }
         fontDictionary.Add(fontName, fontFileName);
       }
@@ -182,10 +179,9 @@ namespace LediReader.Gui
 
       string GetStyleSheet(string name, string htmlFileNameReferencedFrom)
       {
-        EpubTextContentFile cssFile;
         // calculate absolute name with reference to htmlFileNameReferencedFrom
         var absoluteName = HtmlToFlowDocument.CssStylesheets.GetAbsoluteFileNameForFileRelativeToHtmlFile(name, htmlFileNameReferencedFrom);
-        if (cssFiles.TryGetValue(absoluteName, out cssFile))
+        if (cssFiles.TryGetLocalFileByFilePath(absoluteName, out var cssFile))
           return cssFile.Content;
 
         // if this could not resolve the name, then try to go to parent directories
@@ -194,12 +190,12 @@ namespace LediReader.Gui
           var idx = htmlFileNameReferencedFrom.LastIndexOf("/");
           htmlFileNameReferencedFrom = htmlFileNameReferencedFrom.Substring(0, idx - 1);
           absoluteName = HtmlToFlowDocument.CssStylesheets.GetAbsoluteFileNameForFileRelativeToHtmlFile(name, htmlFileNameReferencedFrom);
-          if (cssFiles.TryGetValue(absoluteName, out cssFile))
+          if (cssFiles.TryGetLocalFileByFilePath(absoluteName, out cssFile))
             return cssFile.Content;
         }
 
         // if this was not successful, then try it with the name alone
-        if (cssFiles.TryGetValue(name, out cssFile))
+        if (cssFiles.TryGetLocalFileByFilePath(name, out cssFile))
           return cssFile.Content;
 
         return null;
@@ -209,10 +205,10 @@ namespace LediReader.Gui
       // Entire HTML content of the book
       var converter = new HtmlToFlowDocument.Converter() { AttachSourceAsTags = true };
       var flowDocument = new HtmlToFlowDocument.Dom.FlowDocument();
-      foreach (EpubTextContentFile htmlFile in readingOrder)
+      foreach (var htmlFile in readingOrder)
       {
         string htmlContent = htmlFile.Content;
-        var textElement = converter.ConvertXHtml(htmlContent, false, GetStyleSheet, htmlFile.FileName); // create sections
+        var textElement = converter.ConvertXHtml(htmlContent, false, GetStyleSheet, htmlFile.FilePath); // create sections
         flowDocument.AppendChild(textElement); // and add them to the flow document
       }
       Settings.BookSettings.BookFileName = fileName;
@@ -246,7 +242,7 @@ namespace LediReader.Gui
       {
         get
         {
-          if (_contentManager._bookContent.Images.TryGetValue(relativeFileName, out var contentFile))
+          if (_contentManager._bookContent.Images.TryGetLocalFileByFilePath(relativeFileName, out var contentFile))
           {
             using (var stream = new MemoryStream(contentFile.Content))
             {
